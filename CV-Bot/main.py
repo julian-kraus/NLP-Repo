@@ -1,16 +1,36 @@
 # This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import re
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def check_for_alphabet(string):
+    return True
+
+name_re = "([A-Z]|[a-z])[a-z]+ ([A-Z]|[a-z])[a-z]+( ([A-Z]|[a-z])[a-z]+)*"
+date_re = "([0-3]?[0-9].[0-1]?[0-9].[1-2][0-9][0-9][0-9])|([0-3]?[0-9]/[0-1]?[0-9]/[1-2][0-9][0-9][0-9])"
+data = {"Personal Data":
+            {"Name": ["What is your full name?", name_re, None, None],
+             "Birthdate": ["What is your date of birth?", date_re, None]}
+        }
+question_num = 0
+re_num = 1
+data_num = 2
+def check_answer(answer, regex):
+    if regex:
+        val = re.search(regex, answer)
+        print(val)
+    return answer
+def ask_question(stage):
+    current_stage = data[stage]
+    for attr in current_stage.keys():
+        answer = input(current_stage[attr][question_num] + "\n")
+        current_stage[attr][data_num] = check_answer(answer, current_stage[attr][re_num])
+
+def run():
+
+    for stage in data.keys():
+        ask_question(stage)
+        print(data[stage]["Name"])
+
+run()
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
