@@ -1,6 +1,5 @@
 # This is a sample Python script.
 import re
-from termcolor import colored
 
 
 def check_for_alphabet(string):
@@ -51,9 +50,40 @@ data = {"Personal Data":
                           interests_re, None]
         },
 }
+
+debug_data = {"Personal Data":
+    {
+        "Name": "Max Mustermann",
+        "Birthdate": "01.01.2001",
+        "E-Mail": "abc@gmail.com",
+        "Address": "Bauerstr. 4"
+    },
+    "Education":
+        {
+            "Education_history": "asdfasdfasdfasdfasdf"
+        },
+    "Experience":
+        {
+            "Experience_history": "asdfasdfasdfasdfasdf"
+        },
+    "Social Engagement":
+        {
+            "Social_history": "asdfasdfasdfasdf"
+        },
+    "Skills":
+        {
+            "Skills": "asdfjashdfkajsdhf"
+        },
+    "Interests":
+        {
+            "Interests": "asdhfakjsdhfasdf"
+        },
+}
 question_num = 0
 re_num = 1
 data_num = 2
+debug = True
+
 
 
 def check_answer(answer, regex):
@@ -67,13 +97,13 @@ def check_answer(answer, regex):
 def ask_question(stage):
     current_stage = data[stage]
     for attr in current_stage.keys():
-        answer = input(current_stage[attr][question_num] + "\n")
+        answer = input(current_stage[attr][question_num] + "\n") if not debug else debug_data[stage][attr]
         current_stage[attr][data_num] = check_answer(answer, current_stage[attr][re_num])
 
 
 def print_results():
     indent = "   "
-    cv = ""
+    cv = "curriculum vitae\n"
     for stage in data.keys():
         contains_data = False
         stage_text = stage + ":\n"
@@ -83,10 +113,11 @@ def print_results():
                 stage_text += indent + sub_headline + ":\n"
                 stage_text += indent + indent + data[stage][sub_headline][data_num] + "\n"
         if contains_data:
-            cv += stage_text
-
+            cv += stage_text + "\n"
+    print(cv)
 
 def run():
+    print()
     for stage in data.keys():
         ask_question(stage)
     print_results()
