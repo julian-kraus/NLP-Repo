@@ -72,11 +72,18 @@ def ask_question(stage):
 
 
 def print_results():
+    indent = "   "
+    cv = ""
     for stage in data.keys():
-        print(colored(stage + " :", 'white', attrs=['bold']))
-        for sub_headline in stage.keys():
-            print(colored(sub_headline + " :", 'light grey', attrs=['bold']))
-            print(data[stage][sub_headline][data_num])
+        contains_data = False
+        stage_text = stage + ":\n"
+        for sub_headline in data[stage].keys():
+            if data[stage][sub_headline][data_num] != None:
+                contains_data = True
+                stage_text += indent + sub_headline + ":\n"
+                stage_text += indent + indent + data[stage][sub_headline][data_num] + "\n"
+        if contains_data:
+            cv += stage_text
 
 
 def run():
