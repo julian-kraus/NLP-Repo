@@ -23,27 +23,28 @@ data = {"Personal Data":
         "Name": ["What is your full name?", name_re, None],
         "Birthdate": ["What is your date of birth?", date_re, None],
         "E-Mail": ["Please tell me your email.", mail_re, None],
-        "Address": ["Where do you live?", address_re, None]
+        "Address": ["Please state your address.", address_re, None]
     },
     "Education":
         {
-            "Education_history": ["Please state your educational steps in bullet points or in the form of a "
-                                  "continuous text", educ_re, None]
+            "Education_history": ["Please state your educational steps in the form of a "
+                                  "continuous text. For each educational step please enter a time frame, the educational "
+                                  "step and the name of the teaching institution", educ_re, None]
         },
     "Experience":
         {
             "Experience_history": ["Please state your work experience steps in bullet points or in the form of a "
-                                   "continuous text", exper_re, None]
+                                   "continuous text.", exper_re, None]
         },
     "Social Engagement":
         {
             "Social_history": ["Please state your social engagements steps in bullet points or in the form of a "
-                               "continuous text", social_re, None]
+                               "continuous text.", social_re, None]
         },
     "Skills":
         {
             "Skills": ["Please state your work experience steps in bullet points or in the form of a "
-                       "continuous text", skills_re, None]
+                       "continuous text.", skills_re, None]
         },
     "Interests":
         {
@@ -84,6 +85,7 @@ def print_results():
                 stage_text += indent + indent + data[stage][sub_headline][data_num] + "\n"
         if contains_data:
             cv += stage_text
+    print(cv)
 
 
 def run():
