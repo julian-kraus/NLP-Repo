@@ -19,8 +19,8 @@ data = {"Personal Data":
     "Education":
         {
             "Education_history": ["Please state your educational steps in the form of a "
-                                  "continuous text. For each educational step please enter a time frame, the educational "
-                                  "step and the name of the teaching institution", educ_re, None]
+                                  "continuous text. For each educational step please enter a time frame, "
+                                  "the educational step and the name of the teaching institution", educ_re, None]
         },
     "Experience":
         {
@@ -52,7 +52,8 @@ debug_data = {"Personal Data":
     },
     "Education":
         {
-            "Education_history": "asdfasdfasdfasdfasdf"
+            "Education_history": "This is where the education history is going to be stated, in the format of a time"
+                                 "frame, the educational step and the teaching institution"
         },
     "Experience":
         {
