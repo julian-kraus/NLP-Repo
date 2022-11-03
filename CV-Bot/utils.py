@@ -75,4 +75,4 @@ debug_data = {"Personal Data":
 question_num = 0
 re_num = 1
 data_num = 2
-debug = True
+debug = False

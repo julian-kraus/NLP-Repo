@@ -9,7 +9,6 @@ def check_answer(answer, regex):
     print(answer)
     if regex:
         val = re.search(regex, answer)
-        print(val)
     return answer
 
 
