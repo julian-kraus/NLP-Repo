@@ -11,8 +11,10 @@ Part of the project is using trained pipelines/models (TODO: https://spacy.io/us
 #### Questions: 
 1. Valid approach on questioning, e.g. on Education history? 
    1. If these variables/requirements are not met then the next step would be to initialize a further dialog with the user
+   2. How should we get a history about e.g. education? A text? A text with specified markers for each step? Questions for every step?
 2. Which model would suit here bests? --> Spacy? What is the best approach on finding the correct model?
-3. Define scopes of the next step 
+3. How much should the user drive the conversation? Should the user be the initator, with us giving suggestions for content, if the user asks for it? Should we give a guide on how the user can ask questions? 
+4. Define scopes of the next step 
 
 #### Next steps: 
 1. Improve the structure of the CV 
