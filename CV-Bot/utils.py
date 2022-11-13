@@ -49,7 +49,7 @@ def format_data(data, all_data, types):
 name_re = "([A-Z]|[a-z])[a-z]+ ([A-Z]|[a-z])[a-z]+( ([A-Z]|[a-z])[a-z]+)*"
 date_re = "([0-3]?[0-9].[0-1]?[0-9].[1-2][0-9][0-9][0-9])|([0-3]?[0-9]/[0-1]?[0-9]/[1-2][0-9][0-9][0-9])"
 mail_re = ".+@.+\..+"
-address_re = None
+address_re = "[A-Z][a-z]*.? [0-9]*"
 educ_re = None
 exper_re = None
 social_re = None
@@ -64,7 +64,7 @@ data = {"Personal Data":
         "Name": ["What is your full name?", lambda doc: get_data(1, ["PERSON"], doc, to_string), None],
         "Birthdate": ["What is your date of birth?", lambda doc: get_data(1, ["DATE", "CARDINAL"], doc, to_string), None],
         "E-Mail": ["Please tell me your email.", lambda t: re.search(mail_re, t).group(), None],
-        #"Address": ["Please state your address.", lambda doc: get_data(1, ["ADRESS"], doc, lambda x: x), None] # TODO Train spaCY on adresses
+        "Address": ["Please state your address.", lambda t: re.search(address_re, t).group(), None] # TODO Train spaCY on adresses
     },
     "Education":
         {
