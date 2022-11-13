@@ -5,18 +5,14 @@ from utils import *
 def check_for_alphabet(string):
     return True
 
-def check_answer(answer, regex):
-    print(answer)
-    if regex:
-        val = re.search(regex, answer)
-    return answer
-
-
 def ask_question(stage):
     current_stage = data[stage]
     for attr in current_stage.keys():
+        # get the answer from the user or from the debug data
         answer = input(current_stage[attr][question_num] + "\n") if not debug else debug_data[stage][attr]
-        current_stage[attr][data_num] = check_answer(answer, current_stage[attr][re_num])
+        # call check answer with the answer and the formatation function
+        check_answer = current_stage[attr][fun_num]
+        current_stage[attr][data_num] = check_answer(answer)
 
 
 def print_results():
@@ -36,7 +32,9 @@ def print_results():
 
 
 def run():
+    # go through all sections of the CV 
     for stage in data.keys():
+        # for each section ask the accordingly stored questions
         ask_question(stage)
     print_results()
 
