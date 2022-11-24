@@ -5,9 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5649b55e-c08f-47c7-b4e3-720abb9a88ae" name="Changes" comment="add readme.md">
+      <change afterPath="$PROJECT_DIR$/dialog.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
-    <list id="d940c511-92f0-4fb1-bee5-601ff7e2efda" name="Changes by danielbier" comment="" />
+    <list id="d940c511-92f0-4fb1-bee5-601ff7e2efda" name="Changes by danielbier" comment="">
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,13 +21,33 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="Jupyter Notebook" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/utils.py">
+      <ranges>
+        <range start1="2" end1="2" start2="2" end2="4" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="3" end1="5" start2="5" end2="6" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="7" end1="29" start2="8" end2="8" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="58" end1="58" start2="37" end2="38" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="61" end1="61" start2="41" end2="58" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="63" end1="65" start2="60" end2="62" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="66" end1="67" start2="63" end2="64" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="72" end1="73" start2="69" end2="73" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="77" end1="78" start2="77" end2="81" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="82" end1="83" start2="85" end2="89" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="87" end1="88" start2="93" end2="97" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="92" end1="93" start2="101" end2="104" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="95" end1="95" start2="106" end2="143" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
+        <range start1="104" end1="105" start2="152" end2="155" changelist="d940c511-92f0-4fb1-bee5-601ff7e2efda" />
+      </ranges>
+    </file>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -35,18 +60,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "last_opened_file_path": "C:/Users/kraus/OneDrive/Uni/Semester 5 - Barcelona/Term 1/AI/P-02/multiagent",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/kraus/OneDrive/Uni/Semester 5 - Barcelona/Term 1/AI/P-03/reinforcement&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="CV-Bot" />
@@ -83,7 +108,9 @@
       <workItem from="1666707462917" duration="24000" />
       <workItem from="1667220446521" duration="2463000" />
       <workItem from="1668082266353" duration="57000" />
-      <workItem from="1668349949463" duration="8970000" />
+      <workItem from="1668349949463" duration="9077000" />
+      <workItem from="1668771685506" duration="47000" />
+      <workItem from="1669282439560" duration="10615000" />
     </task>
     <task id="LOCAL-00001" summary="add readme.md">
       <created>1667490598481</created>
@@ -118,19 +145,19 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/utils.py</url>
-          <line>14</line>
-          <option name="timeStamp" value="2" />
+          <url>file://$PROJECT_DIR$/main.py</url>
+          <line>6</line>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/utils.py</url>
-          <line>23</line>
-          <option name="timeStamp" value="3" />
+          <url>file://$PROJECT_DIR$/dialog.py</url>
+          <line>59</line>
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/CV_Bot$main.coverage" NAME="main Coverage Results" MODIFIED="1668358936503" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CV_Bot$main.coverage" NAME="main Coverage Results" MODIFIED="1669296008737" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
