@@ -60,33 +60,28 @@ data = {"Personal Data":
     {
         "Name": ["What is your full name?", {("PERSON", ""): None}],
         "Birthdate": ["What is your date of birth?", {("DATE", "CARDINAL"): None}],
-        "E-Mail": ["Please tell me your email.", lambda t: re.search(mail_re, t).group(), None],
-        "Address": ["Please state your address.", lambda t: re.search(address_re, t).group(), None]
+        "E-Mail": ["Please tell me your email.", {("E-Mail", ""): None}],
+        "Address": ["Please state your address.", {("Address", "CARDINAL"): None}]
     },
     "Education":
         {
-            "Education_history": ["Please state your educational steps in the form of a "
-                                  "continuous text. For each educational step please enter a time frame, "
-                                  "the educational step and the name of the teaching institution",
-                                  {("DATE", "CARDINAL"): None,
-                                   ("DATE", "CARDINAL"): None,
-                                   ("ORG", ""): None}]
+            "Step 1": ["Please state an education step containing the teaching institution, a start date "
+                       "and a end date.",
+                       {("DATE", "CARDINAL"): None,
+                        ("DATE", "CARDINAL"): None,
+                        ("ORG"): None}]
         },
     "Experience":
         {
-            "Experience_history": ["Please state your work experience steps in bullet points or in the form of a "
-                                   "continuous text.",
-                                   {("DATE", "CARDINAL"): None,
-                                    ("DATE", "CARDINAL"): None,
-                                    ("ORG", ""): None}]
+            "Step 1": ["Please state your work experience steps in bullet points or in the form of a "
+                       "continuous text.",
+                       {("DATE", "CARDINAL"): None}]
         },
     "Social Engagement":
         {
-            "Social_history": ["Please state your social engagements steps in bullet points or in the form of a "
+            "Step 1": ["Please state your social engagements steps in bullet points or in the form of a "
                                "continuous text.",
-                               {("DATE", "CARDINAL"): None,
-                                ("DATE", "CARDINAL"): None,
-                                ("ORG", ""): None}]
+                               {("DATE", "CARDINAL"): None}]
         },
     "Skills":
         {
@@ -102,45 +97,8 @@ data = {"Personal Data":
                           {("DATE", "CARDINAL"): None,
                            ("DATE", "CARDINAL"): None,
                            ("ORG", ""): None}]
-        },
+        }
 }
-# data = {"Personal Data":
-#     {
-#         "Name": ["What is your full name?", lambda doc: get_data(1, ["PERSON"], doc, to_string), None],
-#         "Birthdate": ["What is your date of birth?", lambda doc: get_data(1, ["DATE", "CARDINAL"], doc, to_string),
-#                       None],
-#         "E-Mail": ["Please tell me your email.", lambda t: re.search(mail_re, t).group(), None],
-#         "Address": ["Please state your address.", lambda t: re.search(address_re, t).group(), None]
-#         # TODO Train spaCY on adresses
-#     },
-#     "Education":
-#         {
-#             "Education_history": ["Please state your educational steps in the form of a "
-#                                   "continuous text. For each educational step please enter a time frame, "
-#                                   "the educational step and the name of the teaching institution",
-#                                   lambda doc: get_data(-1, ["DATE", "ORG"], doc, to_string), None]
-#         },
-#     "Experience":
-#         {
-#             "Experience_history": ["Please state your work experience steps in bullet points or in the form of a "
-#                                    "continuous text.", lambda x: x, None]
-#         },
-#     "Social Engagement":
-#         {
-#             "Social_history": ["Please state your social engagements steps in bullet points or in the form of a "
-#                                "continuous text.", lambda x: x, None]
-#         },
-#     "Skills":
-#         {
-#             "Skills": ["Please state your work experience steps in bullet points or in the form of a "
-#                        "continuous text.", lambda x: x, None]
-#         },
-#     "Interests":
-#         {
-#             "Interests": ["If you would like to state any personal interests in your CV please enter them here: ",
-#                           lambda x: x, None]
-#         },
-# }
 debug_data = {"Personal Data":
     {
         "Name": "Max Mustermann",
@@ -187,3 +145,4 @@ question_num = 0
 fun_num = 1
 data_num = 2
 debug = False
+data_store = 1
