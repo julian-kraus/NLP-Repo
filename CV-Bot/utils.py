@@ -171,7 +171,17 @@ debug_data = {"Personal Data":
             "Interests": "asdhfakjsdhfasdf"
         },
 }
+
+check_data_questions = ["Can you show me what I entered for X?",
+                        "What did you put as?", "Show me my X.",
+                        "What are my X?"
+                        ]
+check_prev = ["Last", "last", "previous", "Previous"]
+
+def print_data(stage):
+    print("Requested to print the stage " + stage)
+
 question_num = 0
 fun_num = 1
 data_num = 2
-debug = True
+debug = False
