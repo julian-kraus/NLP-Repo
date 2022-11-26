@@ -87,15 +87,23 @@ class Dialog:
             # get the value of the dict of the current stage (eg, Name, Birthdate ...)
             current_stage = self.get_current_stage_data()
             # go through all questions for the current stage, e.g. What is your name?
-            for question in current_stage:
+            for question in list(current_stage):
                 # get processed input by user
                 self.add_question_to_history(question)
                 processed_input = self.understanding(self.ask(question))
 
+                print('processed input')
+                print(processed_input)
+
                 # store data
                 current_question = self.get_current_question_data()
                 data_dict = current_question[data_store]
-                data_dict[list(data_dict)[0]] = processed_input
+
+                for key, value in data_dict.items():
+                    for input in list(processed_input):
+                        if input[0] in key:
+                            data_dict[key] = input[1]
+                            processed_input.remove(input)
 
                 print(data)
 
@@ -114,7 +122,7 @@ class Dialog:
     def classify(self, user_input):
         user_input_vec = np.array(nlp(user_input).vector)
         cosine = np.dot(user_input_vec, self.check_data_vec) / (norm(user_input_vec) * norm(self.check_data_vec))
-        if cosine > 0.3:
+        if cosine > 0.5:
             if any(e in user_input for e in check_prev):
                 return self.get_previous_stage()
             else:
@@ -124,7 +132,7 @@ class Dialog:
                 return self.handle_error(self, user_input, check_data_error)
         return "answer"
 
-    def get_data(self, input):
+    def get_data(self, input): # TODO add regex for address and email
         user_data = []
         # check if we are only looking for regex and not the SpaCy model
         current_question = self.get_current_question_data()
@@ -134,8 +142,7 @@ class Dialog:
         for entity in doc.ents:
             for type in necessary_entities:
                 if entity.label_ == type:
-                    user_data.append(entity.text)
-        print(user_data)
+                    user_data.append(tuple((type, entity.text)))
         return user_data
 
 
@@ -161,6 +168,21 @@ class Dialog:
                     print(self.get_current_stage_data())
                     stage = self.get_current_stage_data()
                     stage[('Step' + str(counter + 2))] = [None,
-                                                                       {("DATE", "DATE", "CARDINAL", "ORG"): processed_input}]
+                       {("DATE", "CARDINAL", '1'): None,
+                        ("DATE", "CARDINAL", '2'): None,
+                        ("ORG", ""): None}]
+                    self.add_question_to_history(('Step' + str(counter + 2)))
+                    print(self.get_current_question_name())
+                    current_question = self.get_current_question_data()
+                    data_dict = current_question[data_store]
+
+                    print(data_dict)
+                    print(current_question)
+
+                    for key, value in data_dict.items():
+                        for inp in list(processed_input):
+                            if inp[0] in key:
+                                data_dict[key] = inp[1]
+                                processed_input.remove(inp)
                 print(data)
 

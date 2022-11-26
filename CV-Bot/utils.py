@@ -67,9 +67,9 @@ data = {"Personal Data":
         {
             "Step 1": ["Please state an education step containing the teaching institution, a start date "
                        "and a end date.",
-                       {("DATE", "CARDINAL"): None,
-                        ("DATE", "CARDINAL"): None,
-                        ("ORG"): None}]
+                       {("DATE", "CARDINAL", '1'): None,
+                        ("DATE", "CARDINAL", '2'): None,
+                        ("ORG", ""): None}]
         },
     "Experience":
         {
