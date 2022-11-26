@@ -1,0 +1,38 @@
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	
++++ b/main.py	
+@@ -1,6 +1,6 @@
+ # This is a sample Python script.
+ import re
+-
++from termcolor import colored
+ 
+ def check_for_alphabet(string):
+     return True
+@@ -9,6 +9,13 @@
+ name_re = "([A-Z]|[a-z])[a-z]+ ([A-Z]|[a-z])[a-z]+( ([A-Z]|[a-z])[a-z]+)*"
+ date_re = "([0-3]?[0-9].[0-1]?[0-9].[1-2][0-9][0-9][0-9])|([0-3]?[0-9]/[0-1]?[0-9]/[1-2][0-9][0-9][0-9])"
+ mail_re = ".+@.+\..+"
++address_re = None
++educ_re = None
++exper_re = None
++social_re = None
++skills_re = None
++interests_re = None
++
+ data = {"Personal Data":
+             {
+             "Name": ["What is your full name?", name_re, None, None],
+@@ -38,7 +45,6 @@
+ def run():
+     for stage in data.keys():
+         ask_question(stage)
+-        print(data[stage]["Name"])
+ 
+ 
+ run()

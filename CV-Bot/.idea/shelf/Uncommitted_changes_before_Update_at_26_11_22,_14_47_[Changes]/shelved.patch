@@ -1,0 +1,216 @@
+Index: dialog.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dialog.py b/dialog.py
+--- a/dialog.py	
++++ b/dialog.py	
+@@ -1,3 +1,5 @@
++import spacy as spacy
++
+ from utils import *
+ import keyboard
+ 
+@@ -16,36 +18,34 @@
+         print("Hello, I am CV-Bot. I am here to help you create your CV.")
+         self.speak()
+ 
+-    # ask the question according to the current position
++    # ask according to the current position
+     def ask(self, question):
+         # get the answer from the user or from the debug data
+-        #self.current_question = self.current_stage[question]
+         if debug:
+-            print(self.current_question[question_num])
+             answer = debug_data[self.position][question]
+         else:
+             answer = input(self.current_question[question_num] + "\n")
+-        if debug:
+-            print(answer)
+         return answer
+ 
+-    def listen(self, input):
+-        ...
+-        # wait as long as keyboard is pressed
+-
+     # agent starts to speak with user
+     def speak(self):
+         for position in self.data.keys():
+             self.position = position
+             self.current_stage = self.data[position]
+-            # go throuh all questions for the current stage, e.g. What is your name?
+-            for question in self.current_stage:
++            # go through all questions for the current stage, e.g. What is your name?
++            for question in list(self.current_stage):
++                # get processed input by user
+                 self.current_question = self.current_stage[question]
+-                if question == "E-Mail" or question == "Address":
+-                    processed_input = self.current_question[fun_num](self.ask(question))
+-                else:
+-                    processed_input = self.understanding(self.ask(question))
+-                    self.map_input_to_data(processed_input)
++                processed_input = self.understanding(self.ask(question))
++
++                # store data
++                data_dict = self.current_question[data_store]
++                data_dict[list(data_dict)[0]] = processed_input
++
++                print(data)
++
++                # education and working experience
++                self.sev_bullet_points()
+ 
+     def understanding(self, user_input):
+         input_type = self.classify(user_input)
+@@ -65,8 +65,33 @@
+                 for type in necessary_entities:
+                     if entity.label_ == type:
+                         user_data.append(entity.text)
+-        print(user_data)
+         return user_data
++
++    def map_input_to_data(self, user_data):
++        print("Needs to mapped")
++
++    def sev_bullet_points(self):
++        counter = 0
++        if self.position == 'Education' or self.position == 'Experience':
++            while True:
++                inp = input('If you would like to add another ' + str(self.position) + 'step enter the '
++                                                                                       'information in '
++                                                                                       'the same format '
++                                                                                       'as already done. '
++                                                                                       'Otherwise press '
++                                                                                       'Enter' + "\n")
++
++                if inp == "":
++                    break;
++                else:
++                    # process the given input
++                    processed_input = self.understanding(inp)
++
++                    # create new dictionary element
++                    print(self.current_stage)
++                    self.current_stage[('Step' + str(counter + 2))] = [None,
++                                                                       {("DATE", "DATE", "CARDINAL"): processed_input}]
++                print(data)
+     # if "DATE" in types:
+     #     answer = answer.replace(".", "/")
+     #     answer = answer.replace(",", "/")
+@@ -87,8 +112,4 @@
+     #         len(data)) + "data, while expecting " + str(
+     #         numData) + " \n The found data are " + data_text + "\n the data in the doc is " + doc_data_text)
+     # else:
+-    #     return format_fun(data)
+-
+-    def map_input_to_data(self, user_data):
+-        print("Needs to mapped")
+-
++    #     return format_fun(data)
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	
++++ b/.idea/workspace.xml	
+@@ -5,7 +5,11 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="5649b55e-c08f-47c7-b4e3-720abb9a88ae" name="Changes" comment="add readme.md">
++      <change beforePath="$PROJECT_DIR$/.idea/CV-Bot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/CV-Bot.iml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialog.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+     </list>
+     <list id="d940c511-92f0-4fb1-bee5-601ff7e2efda" name="Changes by danielbier" comment="" />
+     <option name="SHOW_DIALOG" value="false" />
+@@ -35,18 +39,19 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent">{
+-  &quot;keyToString&quot;: {
+-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+-    &quot;last_opened_file_path&quot;: &quot;C:/Users/kraus/OneDrive/Uni/Semester 5 - Barcelona/Term 1/AI/P-03/reinforcement&quot;,
+-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
++  <component name="PropertiesComponent"><![CDATA[{
++  "keyToString": {
++    "ASKED_ADD_EXTERNAL_FILES": "true",
++    "WebServerToolWindowFactoryState": "false",
++    "codeWithMe.voiceChat.enabledByDefault": "false",
++    "last_opened_file_path": "C:/Users/kraus/OneDrive/Uni/Semester 5 - Barcelona/Term 1/AI/P-03/reinforcement",
++    "node.js.detected.package.eslint": "true",
++    "node.js.detected.package.tslint": "true",
++    "node.js.selected.package.eslint": "(autodetect)",
++    "node.js.selected.package.tslint": "(autodetect)",
++    "settings.editor.selected.configurable": "Settings.Markdown"
+   }
+-}</component>
++}]]></component>
+   <component name="RunManager">
+     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+       <module name="CV-Bot" />
+@@ -125,16 +130,11 @@
+           <url>file://$PROJECT_DIR$/main.py</url>
+           <line>6</line>
+           <option name="timeStamp" value="5" />
+-        </line-breakpoint>
+-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+-          <url>file://$PROJECT_DIR$/dialog.py</url>
+-          <line>59</line>
+-          <option name="timeStamp" value="13" />
+         </line-breakpoint>
+       </breakpoints>
+     </breakpoint-manager>
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+-    <SUITE FILE_PATH="coverage/CV_Bot$main.coverage" NAME="main Coverage Results" MODIFIED="1669296008737" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/CV_Bot$main.coverage" NAME="main Coverage Results" MODIFIED="1669470214203" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: .idea/CV-Bot.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/CV-Bot.iml b/.idea/CV-Bot.iml
+--- a/.idea/CV-Bot.iml	
++++ b/.idea/CV-Bot.iml	
+@@ -3,8 +3,9 @@
+   <component name="NewModuleRootManager">
+     <content url="file://$MODULE_DIR$">
+       <excludeFolder url="file://$MODULE_DIR$/venv" />
++      <excludeFolder url="file://$MODULE_DIR$/.env" />
+     </content>
+-    <orderEntry type="inheritedJdk" />
++    <orderEntry type="jdk" jdkName="Python 3.7" jdkType="Python SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+   </component>
+ </module>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	
++++ b/.idea/misc.xml	
+@@ -1,4 +1,4 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 (CV-Bot) (3)" project-jdk-type="Python SDK" />
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.7" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file

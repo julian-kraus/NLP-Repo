@@ -1,0 +1,189 @@
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	
++++ b/main.py	
+@@ -2,26 +2,55 @@
+ import re
+ 
+ 
++
+ def check_for_alphabet(string):
+     return True
+ 
+ 
++# filter for valid inputs by user
+ name_re = "([A-Z]|[a-z])[a-z]+ ([A-Z]|[a-z])[a-z]+( ([A-Z]|[a-z])[a-z]+)*"
+ date_re = "([0-3]?[0-9].[0-1]?[0-9].[1-2][0-9][0-9][0-9])|([0-3]?[0-9]/[0-1]?[0-9]/[1-2][0-9][0-9][0-9])"
+ mail_re = ".+@.+\..+"
+ data = {"Personal Data":
+-            {
+-            "Name": ["What is your full name?", name_re, None, None],
+-            "Birthdate": ["What is your date of birth?", date_re, None],
+-            "E-Mail": ["Please tell me your email.", mail_re, None]
+-             }
+-        }
++    {
++        "Name": ["What is your full name?", name_re, None],
++        "Birthdate": ["What is your date of birth?", date_re, None],
++        "E-Mail": ["Please tell me your email.", mail_re, None],
++        "Address": ["Where do you live?", address_re, None]
++    },
++    "Education":
++        {
++            "Education_history": ["Please state your educational steps in bullet points or in the form of a "
++                                  "continuous text", educ_re, None]
++        },
++    "Experience":
++        {
++            "Experience_history": ["Please state your work experience steps in bullet points or in the form of a "
++                                   "continuous text", exper_re, None]
++        },
++    "Social Engagement":
++        {
++            "Social_history": ["Please state your social engagements steps in bullet points or in the form of a "
++                               "continuous text", social_re, None]
++        },
++    "Skills":
++        {
++            "Skills": ["Please state your work experience steps in bullet points or in the form of a "
++                       "continuous text", skills_re, None]
++        },
++    "Interests":
++        {
++            "Interests": ["If you would like to state any personal interests in your CV please enter them here: ",
++                          interests_re, None]
++        },
++}
+ question_num = 0
+ re_num = 1
+ data_num = 2
+ 
+ 
+ def check_answer(answer, regex):
++    print(answer)
+     if regex:
+         val = re.search(regex, answer)
+         print(val)
+@@ -34,7 +63,6 @@
+         answer = input(current_stage[attr][question_num] + "\n")
+         current_stage[attr][data_num] = check_answer(answer, current_stage[attr][re_num])
+ 
+-
+ def run():
+     for stage in data.keys():
+         ask_question(stage)
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	
++++ b/.idea/workspace.xml	
+@@ -1,7 +1,15 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
++  <component name="AutoImportSettings">
++    <option name="autoReloadType" value="SELECTIVE" />
++  </component>
+   <component name="ChangeListManager">
+     <list default="true" id="5649b55e-c08f-47c7-b4e3-720abb9a88ae" name="Changes" comment="">
++      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
++    </list>
++    <list id="3ac9e341-d0bd-4398-bba2-f3cf60a59062" name="Changes by Julian" comment="">
+       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+@@ -19,6 +27,20 @@
+   <component name="Git.Settings">
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+   </component>
++  <component name="LineStatusTrackerManager">
++    <file path="$PROJECT_DIR$/main.py">
++      <ranges>
++        <range start1="2" end1="3" start2="2" end2="3" changelist="3ac9e341-d0bd-4398-bba2-f3cf60a59062" />
++        <range start1="4" end1="4" start2="4" end2="5" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
++        <range start1="8" end1="8" start2="9" end2="10" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
++        <range start1="11" end1="11" start2="13" end2="20" changelist="3ac9e341-d0bd-4398-bba2-f3cf60a59062" />
++        <range start1="12" end1="18" start2="21" end2="53" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
++        <range start1="24" end1="24" start2="59" end2="60" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
++        <range start1="36" end1="37" start2="72" end2="72" changelist="5649b55e-c08f-47c7-b4e3-720abb9a88ae" />
++        <range start1="40" end1="41" start2="75" end2="75" changelist="3ac9e341-d0bd-4398-bba2-f3cf60a59062" />
++      </ranges>
++    </file>
++  </component>
+   <component name="MarkdownSettingsMigration">
+     <option name="stateVersion" value="1" />
+   </component>
+@@ -30,7 +52,15 @@
+   </component>
+   <component name="PropertiesComponent"><![CDATA[{
+   "keyToString": {
+-    "WebServerToolWindowFactoryState": "false"
++    "RunOnceActivity.OpenProjectViewOnStart": "true",
++    "RunOnceActivity.ShowReadmeOnStart": "true",
++    "WebServerToolWindowFactoryState": "false",
++    "codeWithMe.voiceChat.enabledByDefault": "false",
++    "last_opened_file_path": "/Users/danielbier/Documents/TUM/Wirtschaftsinformatik/Semester_5/NLP/NLP-Repo/CV-Bot",
++    "node.js.detected.package.eslint": "true",
++    "node.js.detected.package.tslint": "true",
++    "node.js.selected.package.eslint": "(autodetect)",
++    "node.js.selected.package.tslint": "(autodetect)"
+   }
+ }]]></component>
+   <component name="RunManager">
+@@ -66,6 +96,7 @@
+       <option name="presentableId" value="Default" />
+       <updated>1666624320371</updated>
+       <workItem from="1666624324547" duration="3914000" />
++      <workItem from="1667219349765" duration="2145000" />
+     </task>
+     <servers />
+   </component>
+@@ -83,23 +114,7 @@
+       </map>
+     </option>
+   </component>
+-  <component name="XDebuggerManager">
+-    <breakpoint-manager>
+-      <breakpoints>
+-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+-          <url>file://$PROJECT_DIR$/main.py</url>
+-          <line>38</line>
+-          <option name="timeStamp" value="2" />
+-        </line-breakpoint>
+-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+-          <url>file://$PROJECT_DIR$/main.py</url>
+-          <line>24</line>
+-          <option name="timeStamp" value="4" />
+-        </line-breakpoint>
+-      </breakpoints>
+-    </breakpoint-manager>
+-  </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+-    <SUITE FILE_PATH="coverage/CV_Bot$main.coverage" NAME="main Coverage Results" MODIFIED="1666627680205" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/CV_Bot$main.coverage" NAME="main Coverage Results" MODIFIED="1667221300057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	
++++ b/.idea/misc.xml	
+@@ -1,4 +1,4 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 (CV-Bot) (3)" project-jdk-type="Python SDK" />
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.7" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file
