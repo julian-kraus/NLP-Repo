@@ -88,10 +88,10 @@ class Dialog:
     def understanding(self, user_input):
         input_type = self.classify(user_input)
         if input_type == "answer":
-            return self.get_data(input_type, user_input)
+            return self.get_data(user_input)
         else:
             print_data(input_type)
-            self.ask(self.get_current_question())
+            return self.understanding(self.ask(self.get_current_question()))
 
     # Possible returns are "answer" or the stage that is supposed to get printed
     def classify(self, user_input):
@@ -103,8 +103,7 @@ class Dialog:
             else:
                 for key in self.data.keys():
                     if user_input.__contains__(key):
-                        print("Found stage " + key)
-                        return self.data[key]
+                        return key
         return "answer"
 
     def get_data(self, input):
