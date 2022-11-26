@@ -181,6 +181,8 @@ check_prev = ["Last", "last", "previous", "Previous"]
 def print_data(stage):
     print("Requested to print the stage " + stage)
 
+check_data_error = "check_data_not_found"
+
 question_num = 0
 fun_num = 1
 data_num = 2

@@ -51,6 +51,14 @@ class Dialog:
     def add_question_to_history(self, question):
         self.history[-1][1].append(question)
 
+    def handle_error(self, user_input, type):
+        if type == check_data_error:
+            print("Sorry unfortunately we couldn't find the data you were looking for.")
+            new_input = input("Do you want to continue or try again?")
+            if new_input.__contains__("again"):
+                return self.classify(input("Please state your request again."))
+            else:
+                return None
     # ask the question according to the current position
     def ask(self, question):
         # get the answer from the user or from the debug data
@@ -104,6 +112,7 @@ class Dialog:
                 for key in self.data.keys():
                     if user_input.__contains__(key):
                         return key
+                return self.handle_error(self, user_input, check_data_error)
         return "answer"
 
     def get_data(self, input):

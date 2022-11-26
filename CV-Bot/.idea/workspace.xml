@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5649b55e-c08f-47c7-b4e3-720abb9a88ae" name="Changes" comment="add readme.md">
       <change beforePath="$PROJECT_DIR$/dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialog.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <list id="d940c511-92f0-4fb1-bee5-601ff7e2efda" name="Changes by danielbier" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -110,7 +111,7 @@
       <workItem from="1669282439560" duration="10646000" />
       <workItem from="1669300612743" duration="27000" />
       <workItem from="1669389294498" duration="687000" />
-      <workItem from="1669464900000" duration="4690000" />
+      <workItem from="1669464900000" duration="5396000" />
     </task>
     <task id="LOCAL-00001" summary="add readme.md">
       <created>1667490598481</created>
@@ -151,7 +152,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/dialog.py</url>
-          <line>97</line>
+          <line>105</line>
           <option name="timeStamp" value="15" />
         </line-breakpoint>
       </breakpoints>
