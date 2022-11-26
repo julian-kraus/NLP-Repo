@@ -32,17 +32,15 @@ class Dialog:
             stage, _ = self.history[-1]
             return stage
         else:
-            return None  # Todo add error handling
+            return self.handle_error("", no_prev_error)
 
     def add_new_stage(self, position):
         self.history.append((position, []))
 
     def get_current_question_name(self):
         _, questions = self.history[-1]
-        if questions:
-            return questions[-1]
-        else:
-            None  # Todo add error handling
+        return questions[-1]
+
 
     def get_current_question_data(self):
         return data[self.get_current_stage_name()][self.get_current_question_name()]
@@ -52,19 +50,48 @@ class Dialog:
         if len(questions) > 1:
             return questions[-2]
         else:
-            None  # Todo add error handling
+            return self.handle_error("", no_prev_error)
 
     def add_question_to_history(self, question):
         self.history[-1][1].append(question)
 
+    def print_data(self, elem):
+        if elem is None:
+            return
+        text = ""
+        show = False
+        for stage in self.data.keys():
+
+            stage_text = ""
+            if stage.__contains__(elem):
+                stage_text += stage + ":\n"
+
+            for sub_stage in self.data[stage]:
+                if stage.__contains__(elem) or sub_stage.__contains__(elem):
+                    sub_stage_text = sub_stage + ":"
+                    for data in list(self.data[stage][sub_stage][1].values()):
+                        if data:
+                            sub_stage_text += " " + str(data)
+                    if sub_stage_text != sub_stage + ":":
+                        stage_text += sub_stage_text + "\n"
+            if stage_text and stage_text != stage + ":\n":
+                text += stage_text
+        if text != "":
+            print(text, end ="")
+        else:
+            print("I didn't found any data to show you")
+
     def handle_error(self, user_input, type):
         if type == check_data_error:
             print("Sorry unfortunately we couldn't find the data you were looking for.")
-            new_input = input("Do you want to continue or try again?")
-            if new_input.__contains__("again"):
-                return self.classify(input("Please state your request again."))
+            new_input = input("Do you want to continue or try again? \n")
+            if any(ele in new_input for ele in ["again", "Again"]):
+                return self.classify(input("Please state your request again. \n"))
             else:
                 return None
+        elif type == no_prev_error:
+            raise Exception("Tried to look at previous data, without any existing")
+
 
     # ask according to the current position
     def ask(self, question):
@@ -105,18 +132,19 @@ class Dialog:
                             data_dict[key] = input[1]
                             processed_input.remove(input)
 
-                print(data)
+                self.print_data("")
 
                 # education and working experience
                 self.sev_bullet_points()
 
     def understanding(self, user_input):
         input_type = self.classify(user_input)
-        if input_type == "answer":
-            return self.get_data(user_input)
-        else:
-            print_data(input_type)
+        if not input_type or input_type != "answer":
+            self.print_data(input_type)
             return self.understanding(self.ask(self.get_current_question_name()))
+        elif input_type == "answer":
+            return self.get_data(user_input)
+
 
     # Possible returns are "answer" or the stage that is supposed to get printed
     def classify(self, user_input):
@@ -127,13 +155,18 @@ class Dialog:
                 return self.get_previous_stage()
             else:
                 for key in self.data.keys():
-                    if user_input.__contains__(key):
+                    if str.lower(user_input).__contains__(str.lower(key)):
                         return key
-                return self.handle_error(self, user_input, check_data_error)
+                return self.handle_error(user_input, check_data_error)
         return "answer"
 
     def get_data(self, input): # TODO add regex for address and email
         user_data = []
+        if self.get_current_question_name() == "Adress":
+            return [("Adress", re.search(address_re, input).group())]
+        elif self.get_current_question_name() == "E-Mail":
+            return [("E-Mail", re.search(mail_re, input).group())]
+
         # check if we are only looking for regex and not the SpaCy model
         current_question = self.get_current_question_data()
         necessary_entities = [element for innerList in current_question[fun_num].keys() for element in

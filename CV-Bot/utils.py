@@ -136,10 +136,12 @@ check_data_questions = ["Can you show me what I entered for X?",
                         ]
 check_prev = ["Last", "last", "previous", "Previous"]
 
-def print_data(stage):
-    print("Requested to print the stage " + stage)
 
+
+# Error codes
 check_data_error = "check_data_not_found"
+no_prev_error = "prev"
+
 
 question_num = 0
 fun_num = 1
