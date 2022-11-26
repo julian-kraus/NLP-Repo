@@ -7,6 +7,7 @@ spacy.cli.download("en_core_web_sm")
 nlp = spacy.load('en_core_web_sm')
 
 
+
 class Dialog:
 
     def __init__(self):
