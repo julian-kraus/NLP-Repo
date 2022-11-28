@@ -2,6 +2,7 @@ from utils import *
 import keyboard
 import numpy as np
 from numpy.linalg import norm
+import Levenshtein
 
 spacy.cli.download("en_core_web_sm")
 nlp = spacy.load('en_core_web_sm')
@@ -109,6 +110,7 @@ class Dialog:
         for position in self.data.keys():
             # add the new stage to the history
             self.add_new_stage(position)
+            print("Now we are going to go to your " + position)
             # get the value of the dict of the current stage (eg, Name, Birthdate ...)
             current_stage = self.get_current_stage_data()
             # go through all questions for the current stage, e.g. What is your name?
@@ -117,8 +119,9 @@ class Dialog:
                 self.add_question_to_history(question)
                 processed_input = self.understanding(self.ask(question))
 
-                print('processed input')
-                print(processed_input)
+                if debug:
+                    print('processed input')
+                    print(processed_input)
 
                 # store data
                 current_question = self.get_current_question_data()
@@ -131,7 +134,8 @@ class Dialog:
                             processed_input.remove(inp)
                             break;
 
-                self.print_data("")
+                if debug:
+                    self.print_data("")
 
                 # education and working experience
                 self.sev_bullet_points()
@@ -146,19 +150,42 @@ class Dialog:
 
     # Possible returns are "answer" or the stage that is supposed to get printed
     def classify(self, user_input):
-        user_input_vec = np.array(nlp(user_input).vector)
-        cosine = np.dot(user_input_vec, self.check_data_vec) / (norm(user_input_vec) * norm(self.check_data_vec))
-        if cosine > 0.5:
+        if self.similar(user_input, check_data_questions, 0.4):
             if any(e in user_input for e in check_prev):
                 return self.get_previous_stage()
             else:
-                for key in self.data.keys():
-                    if str.lower(user_input).__contains__(str.lower(key)):
-                        return key
-                return self.handle_error(user_input, check_data_error)
+                return self.get_most_similar(user_input, data_keys)
+                # for key in self.data.keys():
+                #     if self.similar(key, user_input, 0.25):
+                #         return key
+                #     for q in self.data[key].keys():
+                #         if self.similar(q, user_input, 0.25):
+                #             return q
+
         return "answer"
 
-    def get_data(self, input):  # TODO add regex for address and email
+    def get_most_similar(self, input, compare):
+        d = {}
+        for elem in compare:
+            d[elem] = Levenshtein.distance(input, elem) #self.similarity(input, elem)
+        max_val = max(d.values())
+        for key, value in d.items():
+            if max_val == value:
+                return key
+        return self.handle_error(input, check_data_error)
+    def similarity(self, elem, ls):
+        elem_vec = np.array(nlp(elem).vector)
+        if type(ls) == type([]):
+            ls_vec = self.compute_avg_vec(ls)
+        else:
+            ls_vec = np.array(nlp(ls).vector)
+        cosine = np.dot(elem_vec, ls_vec) / (norm(elem_vec) * norm(ls_vec))
+        return cosine
+    def similar(self, elem, ls, threshold):
+        return self.similarity(elem, ls) > threshold
+
+
+    def get_data(self, input): # TODO add regex for address and email
         user_data = []
         if self.get_current_question_name() == "Adress":
             return [("Adress", re.search(address_re, input).group())]
@@ -198,19 +225,21 @@ class Dialog:
                     processed_input = self.understanding(inp)
 
                     # create new dictionary element
-                    print(self.get_current_stage_data())
+
                     stage = self.get_current_stage_data()
                     stage[('Step' + str(counter + 2))] = [None,
                                                           {("DATE", "CARDINAL", '1'): None,
                                                            ("DATE", "CARDINAL", '2'): None,
                                                            ("ORG", ""): None}]
                     self.add_question_to_history(('Step' + str(counter + 2)))
-                    print(self.get_current_question_name())
                     current_question = self.get_current_question_data()
                     data_dict = current_question[data_store]
 
-                    print(data_dict)
-                    print(current_question)
+                    if debug:
+                        print(self.get_current_stage_data())
+                        print(self.get_current_question_name())
+                        print(data_dict)
+                        print(current_question)
 
                     for key, value in data_dict.items():
                         for inp in list(processed_input):
@@ -218,4 +247,5 @@ class Dialog:
                                 data_dict[key] = inp[1]
                                 processed_input.remove(inp)
                                 break;
-                print(data)
+                if debug:
+                    print(data)

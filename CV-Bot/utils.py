@@ -145,7 +145,7 @@ check_prev = ["Last", "last", "previous", "Previous"]
 # Error codes
 check_data_error = "check_data_not_found"
 no_prev_error = "prev"
-
+data_keys = ["Personal Data", "Name", "Birthdate", "E-Mail", "Adress", "Education", "Skills", "Social Engagement", "Experience", "Interests"]
 
 question_num = 0
 fun_num = 1
