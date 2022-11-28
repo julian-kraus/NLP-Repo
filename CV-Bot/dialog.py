@@ -12,7 +12,6 @@ class Dialog:
         self.data = data.copy()
         self.history = []
         self.check_data_vec = self.compute_avg_vec(check_data_questions)
-
         print("Hello, I am CV-Bot. I am here to help you create your CV.")
         self.speak()
 
@@ -77,8 +76,7 @@ class Dialog:
                 text += stage_text
         if text != "":
             print(text, end="")
-        else:
-            print("I didn't found any data to show you")
+
 
     def handle_error(self, user_input, type):
         if type == check_data_error:
@@ -90,7 +88,7 @@ class Dialog:
                 return None
         elif type == no_prev_error:
             print("Sorry i didn't find any previous data.")
-            return self.ask(self.get_current_question_name(), None)
+            return None
 
     # ask according to the current position
     def ask(self, question, data_missing):
@@ -148,7 +146,7 @@ class Dialog:
 
     # Possible returns are "answer" or the stage that is supposed to get printed
     def classify(self, user_input):
-        if self.similar(user_input, check_data_questions, 0.35):
+        if self.similar(user_input, check_data_questions, 0.30):
             if self.check_input_for_words(user_input, check_prev):
                 if self.check_input_for_words(user_input, check_stage):
                     return self.get_previous_stage()
@@ -259,7 +257,7 @@ class Dialog:
                     # create new dictionary element
 
                     stage = self.get_current_stage_data()
-                    stage[('Step' + str(counter + 2))] = [q,
+                    stage[(str(counter + 2))] = [q,
                                                           {("DATE", "CARDINAL", '1'): None,
                                                            ("DATE", "CARDINAL", '2'): None,
                                                            ("ORG", ""): None}]

@@ -1,6 +1,7 @@
 import spacy
 import re
 
+
 spacy.cli.download("en_core_web_sm")
 nlp = spacy.load('en_core_web_sm')
 
@@ -140,14 +141,14 @@ check_data_questions = ["Can you show me what I entered for X?",
                         "What did you put as?", "Show me my X.",
                         "What are my X?",
                         "Tell me about the previous Information."
-                        "Show me the last questions input."
+                        "Show me the last questions stage."
                         "What was saved in the X?",
 
                         "Can you show me what I entered for X",
                         "What did you put as?", "Show me my X",
                         "What are my X",
-                        "Tell me about the previous Information"
-                        "Show me the last questions input"
+                        "Tell me about the previous stage"
+                        "Show me the last questions section"
                         "What was saved in the X"
                         ]
 check_prev = ["Last", "last", "previous", "Previous"]
