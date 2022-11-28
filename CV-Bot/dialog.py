@@ -93,14 +93,17 @@ class Dialog:
             raise Exception("Tried to look at previous data, without any existing")
 
     # ask according to the current position
-    def ask(self, question):
+    def ask(self, question, data_missing):
         # get the answer from the user or from the debug data
         current_question = self.get_current_question_data()
         if debug:
             print(current_question[question_num])
             answer = debug_data[self.get_current_stage()][question]
         else:
-            answer = input(current_question[question_num] + "\n")
+            if data_missing != None:
+                answer = input(str(data_missing) + ' - question: - ' + current_question[question_num] + "\n")
+            else:
+                answer = input(current_question[question_num] + "\n")
         if debug:
             print(answer)
         return answer
@@ -117,7 +120,7 @@ class Dialog:
             for question in list(current_stage):
                 # get processed input by user
                 self.add_question_to_history(question)
-                processed_input = self.understanding(self.ask(question))
+                processed_input = self.understanding(self.ask(question, None))
 
                 if debug:
                     print('processed input')
@@ -127,24 +130,19 @@ class Dialog:
                 current_question = self.get_current_question_data()
                 data_dict = current_question[data_store]
 
-                for key, value in data_dict.items():
-                    for inp in list(processed_input):
-                        if inp[0] in key:
-                            data_dict[key] = inp[1]
-                            processed_input.remove(inp)
-                            break;
+                self.map_data(data_dict, processed_input, question)
 
                 if debug:
                     self.print_data("")
 
                 # education and working experience
-                self.sev_bullet_points()
+                self.sev_bullet_points(question)
 
     def understanding(self, user_input):
         input_type = self.classify(user_input)
         if not input_type or input_type != "answer":
             self.print_data(input_type)
-            return self.understanding(self.ask(self.get_current_question_name()))
+            return self.understanding(self.ask(self.get_current_question_name(), None))
         elif input_type == "answer":
             return self.get_data(user_input)
 
@@ -206,7 +204,31 @@ class Dialog:
         user_data = list(set([i for i in user_data]))
         return user_data
 
-    def sev_bullet_points(self):
+    def map_data(self, data_dict, processed_input, question):
+        print('before mapped')
+        print(data)
+        for key, value in data_dict.items():
+            for inp in list(processed_input):
+                if inp[0] in key:
+                    data_dict[key] = inp[1]
+                    processed_input.remove(inp)
+                    break;
+        print('data_dict')
+        print(data_dict)
+        # check if all necessary information are given
+        for key, value in data_dict.items():
+            # value missing?
+            if value == None:
+                # until we have fitting input keep asking
+                while True:
+                    question_missing_info = 'The following information seems to be missing: ' + str(key[0]) + ' Please enter the information: \n'
+                    processed_input = self.understanding(self.ask(question, question_missing_info))
+                    print(processed_input)
+                    if len(processed_input) != 0:
+                        data_dict[key] = processed_input[0][1]
+                        break;
+        print(data)
+    def sev_bullet_points(self, question):
         counter = 0
         position = self.get_current_stage_name()
         if position == 'Education' or position == 'Experience':
@@ -241,11 +263,6 @@ class Dialog:
                         print(data_dict)
                         print(current_question)
 
-                    for key, value in data_dict.items():
-                        for inp in list(processed_input):
-                            if inp[0] in key:
-                                data_dict[key] = inp[1]
-                                processed_input.remove(inp)
-                                break;
+                    self.map_data(data_dict, processed_input, question)
                 if debug:
                     print(data)
