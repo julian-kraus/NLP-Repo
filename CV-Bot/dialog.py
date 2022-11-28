@@ -104,9 +104,7 @@ class Dialog:
             answer = debug_data[self.get_current_stage_name()][question]
         else:
             if data_missing != None:
-                print(data_missing)
-                print(current_question[question_num])
-                answer = input(str(data_missing) + ' - question: - ' + current_question[question_num] + "\n")
+                answer = input(str(data_missing) + ' - question: ' + current_question[question_num] + "\n")
             else:
                 answer = input(current_question[question_num] + "\n")
         if debug:
@@ -237,7 +235,6 @@ class Dialog:
                 while True:
                     question_missing_info = 'The following information seems to be missing: ' + str(key[0]) + ' Please enter the information: \n'
                     processed_input = self.understanding(self.ask(question, question_missing_info))
-                    print(processed_input)
                     if len(processed_input) != 0:
                         data_dict[key] = processed_input[0][1]
                         break;
