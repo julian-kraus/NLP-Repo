@@ -243,12 +243,11 @@ class Dialog:
         position = self.get_current_stage_name()
         if position == 'Education' or position == 'Experience':
             while True:
-                inp = input('If you would like to add another ' + str(position) + ' step enter the '
-                                                                                  'information in '
-                                                                                  'the same format '
-                                                                                  'as already done. '
-                                                                                  'Otherwise press '
-                                                                                  'Enter' + "\n")
+                q = 'If you would like to add another ' + str(position) + 'step enter the information in the same ' \
+                                                                          'format as already done. Otherwise press ' \
+                                                                          'Enter \n '
+
+                inp = input(q)
 
                 if inp == "":
                     break;
@@ -259,7 +258,7 @@ class Dialog:
                     # create new dictionary element
 
                     stage = self.get_current_stage_data()
-                    stage[('Step' + str(counter + 2))] = [str(position) + ' step Nr.' + str(counter + 2),
+                    stage[('Step' + str(counter + 2))] = [q,
                                                           {("DATE", "CARDINAL", '1'): None,
                                                            ("DATE", "CARDINAL", '2'): None,
                                                            ("ORG", ""): None}]
