@@ -2,6 +2,13 @@
 ## Cv-Bot
 
 ### Current status
+Current features: 
+- Entered wrong format? 
+    - Ask question for missing information
+- Ask for data to be displayed
+  - Previous or specific works, regardless whether it is a question or stage
+  - If it doesn't get recognized, user gets the possibility to enter again or continue
+
 #### Goal:
 
 The goal is to create, based on the information the user has given with the input fields, to create a CV containing all 

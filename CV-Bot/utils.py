@@ -68,7 +68,7 @@ data = {"Personal Data":
     },
     "Education":
         {
-            "Step 1": ["Please state an education step containing the teaching institution, a start date "
+            "1": ["Please state an education step containing the teaching institution, a start date "
                        "and a end date.",
                        {("DATE", "CARDINAL", '1'): None,
                         ("DATE", "CARDINAL", '2'): None,
@@ -76,7 +76,7 @@ data = {"Personal Data":
         },
     "Experience":
         {
-            "Step 1": ["Please state an step of your working experience containing the company, a start date "
+            "1": ["Please state an step of your working experience containing the company, a start date "
                        "and a end date.",
                        {("DATE", "CARDINAL", '1'): None,
                         ("DATE", "CARDINAL", '2'): None,
@@ -84,7 +84,7 @@ data = {"Personal Data":
         },
     "Social Engagement":
         {
-            "Step 1": ["Please state a social engagement step containing the the institution, a start date "
+            "1": ["Please state a social engagement step containing the the institution, a start date "
                        "and a end date.",
                        {("DATE", "CARDINAL", '1'): None,
                         ("DATE", "CARDINAL", '2'): None,
@@ -141,6 +141,13 @@ check_data_questions = ["Can you show me what I entered for X?",
                         "What are my X?",
                         "Tell me about the previous Information."
                         "Show me the last questions input."
+                        "What was saved in the X?",
+
+                        "Can you show me what I entered for X",
+                        "What did you put as?", "Show me my X",
+                        "What are my X",
+                        "Tell me about the previous Information"
+                        "Show me the last questions input"
                         "What was saved in the X"
                         ]
 check_prev = ["Last", "last", "previous", "Previous"]
