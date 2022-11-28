@@ -92,8 +92,7 @@ data = {"Personal Data":
         },
     "Skills":
         {
-            "Skills": ["Please state your work experience steps in bullet points or in the form of a "
-                       "continuous text.",
+            "Skills": ["Please state skills you would liked mentioned in your CV.",
                        {("DATE", "CARDINAL"): None,
                         ("DATE", "CARDINAL"): None,
                         ("ORG", ""): None}]

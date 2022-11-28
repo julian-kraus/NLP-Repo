@@ -104,6 +104,8 @@ class Dialog:
             answer = debug_data[self.get_current_stage_name()][question]
         else:
             if data_missing != None:
+                print(data_missing)
+                print(current_question[question_num])
                 answer = input(str(data_missing) + ' - question: - ' + current_question[question_num] + "\n")
             else:
                 answer = input(current_question[question_num] + "\n")
@@ -221,16 +223,12 @@ class Dialog:
         return user_data
 
     def map_data(self, data_dict, processed_input, question):
-        print('before mapped')
-        print(data)
         for key, value in data_dict.items():
             for inp in list(processed_input):
                 if inp[0] in key:
                     data_dict[key] = inp[1]
                     processed_input.remove(inp)
                     break;
-        print('data_dict')
-        print(data_dict)
         # check if all necessary information are given
         for key, value in data_dict.items():
             # value missing?
@@ -243,13 +241,12 @@ class Dialog:
                     if len(processed_input) != 0:
                         data_dict[key] = processed_input[0][1]
                         break;
-        print(data)
     def sev_bullet_points(self, question):
         counter = 0
         position = self.get_current_stage_name()
         if position == 'Education' or position == 'Experience':
             while True:
-                inp = input('If you would like to add another ' + str(position) + 'step enter the '
+                inp = input('If you would like to add another ' + str(position) + ' step enter the '
                                                                                   'information in '
                                                                                   'the same format '
                                                                                   'as already done. '
@@ -265,7 +262,7 @@ class Dialog:
                     # create new dictionary element
 
                     stage = self.get_current_stage_data()
-                    stage[('Step' + str(counter + 2))] = [None,
+                    stage[('Step' + str(counter + 2))] = [str(position) + ' step Nr.' + str(counter + 2),
                                                           {("DATE", "CARDINAL", '1'): None,
                                                            ("DATE", "CARDINAL", '2'): None,
                                                            ("ORG", ""): None}]
@@ -274,10 +271,10 @@ class Dialog:
                     data_dict = current_question[data_store]
 
                     if debug:
-                        print(self.get_current_stage_data())
                         print(self.get_current_question_name())
                         print(data_dict)
                         print(current_question)
+                        print(self.get_current_stage_data())
 
                     self.map_data(data_dict, processed_input, question)
                 if debug:
