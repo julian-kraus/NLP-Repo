@@ -1,5 +1,8 @@
-import re
 import spacy
+import re
+
+spacy.cli.download("en_core_web_sm")
+nlp = spacy.load('en_core_web_sm')
 
 
 # currently loading spacy during every execution
@@ -136,16 +139,30 @@ debug_data = {"Personal Data":
 
 check_data_questions = ["Can you show me what I entered for X?",
                         "What did you put as?", "Show me my X.",
-                        "What are my X?"
+                        "What are my X?",
+                        "Tell me about the previous Information."
+                        "Show me the last questions input."
+                        "What was saved in the X"
                         ]
 check_prev = ["Last", "last", "previous", "Previous"]
-
-
+check_stage = ["stage", "phase", "section"]
+check_again = ["again", "more"]
+data_keys = {
+    "Personal Data": ["Personal", "Personal", "About me"],
+    "Name": ["Name"],
+    "Birthdate": ["Date"],
+    "E-Mail": ["Mail"],
+    "Address": ["Adress"],
+    "Education": ["Education", "School", "University"],
+    "Skills": ["Skill", "Action"],
+    "Social Engagement": ["Social", "Engagement"],
+    "Experience": ["Experience"],
+    "Interests": ["Interests"]
+}
 
 # Error codes
 check_data_error = "check_data_not_found"
 no_prev_error = "prev"
-data_keys = ["Personal Data", "Name", "Birthdate", "E-Mail", "Adress", "Education", "Skills", "Social Engagement", "Experience", "Interests"]
 
 question_num = 0
 fun_num = 1

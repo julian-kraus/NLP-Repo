@@ -3,6 +3,7 @@ import keyboard
 import numpy as np
 from numpy.linalg import norm
 import Levenshtein
+#from replit import clear
 
 spacy.cli.download("en_core_web_sm")
 nlp = spacy.load('en_core_web_sm')
@@ -14,6 +15,7 @@ class Dialog:
         self.data = data.copy()
         self.history = []
         self.check_data_vec = self.compute_avg_vec(check_data_questions)
+        #clear()
         print("Hello, I am CV-Bot. I am here to help you create your CV.")
         self.speak()
 
@@ -85,12 +87,13 @@ class Dialog:
         if type == check_data_error:
             print("Sorry unfortunately we couldn't find the data you were looking for.")
             new_input = input("Do you want to continue or try again? \n")
-            if any(ele in new_input for ele in ["again", "Again"]):
+            if self.check_input_for_words(new_input, check_again):
                 return self.classify(input("Please state your request again. \n"))
             else:
                 return None
         elif type == no_prev_error:
-            raise Exception("Tried to look at previous data, without any existing")
+            print("Sorry i didn't find any previous data.")
+            return self.ask(self.get_current_question_name())
 
     # ask according to the current position
     def ask(self, question, data_missing):
@@ -98,7 +101,7 @@ class Dialog:
         current_question = self.get_current_question_data()
         if debug:
             print(current_question[question_num])
-            answer = debug_data[self.get_current_stage()][question]
+            answer = debug_data[self.get_current_stage_name()][question]
         else:
             if data_missing != None:
                 answer = input(str(data_missing) + ' - question: - ' + current_question[question_num] + "\n")
@@ -149,28 +152,35 @@ class Dialog:
     # Possible returns are "answer" or the stage that is supposed to get printed
     def classify(self, user_input):
         if self.similar(user_input, check_data_questions, 0.4):
-            if any(e in user_input for e in check_prev):
-                return self.get_previous_stage()
+            if self.check_input_for_words(user_input, check_prev):
+                if self.check_input_for_words(user_input, check_stage):
+                    return self.get_previous_stage()
+                else:
+                    return self.get_previous_question_name()
             else:
-                return self.get_most_similar(user_input, data_keys)
-                # for key in self.data.keys():
-                #     if self.similar(key, user_input, 0.25):
-                #         return key
-                #     for q in self.data[key].keys():
-                #         if self.similar(q, user_input, 0.25):
-                #             return q
+                # return self.get_most_similar(user_input, data_keys)
+                for key in self.data.keys():
+                    if self.check_input_for_words(user_input, data_keys[key]):
+                        return key
+                    for q in self.data[key].keys():
+                        if self.check_input_for_words(user_input, data_keys[q]):
+                            return q
+        else:
+            return "answer"
 
-        return "answer"
+    def check_input_for_words(self, user_input, words):
+        return any(str.lower(ele) in str.lower(user_input) for ele in words)
 
-    def get_most_similar(self, input, compare):
-        d = {}
-        for elem in compare:
-            d[elem] = Levenshtein.distance(input, elem) #self.similarity(input, elem)
-        max_val = max(d.values())
-        for key, value in d.items():
-            if max_val == value:
-                return key
-        return self.handle_error(input, check_data_error)
+    # def get_most_similar(self, input, compare):
+    #     d = {}
+    #     for elem in compare:
+    #         d[elem] = Levenshtein.distance(input, elem)  # self.similarity(input, elem)
+    #     max_val = max(d.values())
+    #     for key, value in d.items():
+    #         if max_val == value:
+    #             return key
+    #     return self.handle_error(input, check_data_error)
+
     def similarity(self, elem, ls):
         elem_vec = np.array(nlp(elem).vector)
         if type(ls) == type([]):
@@ -179,16 +189,22 @@ class Dialog:
             ls_vec = np.array(nlp(ls).vector)
         cosine = np.dot(elem_vec, ls_vec) / (norm(elem_vec) * norm(ls_vec))
         return cosine
+
     def similar(self, elem, ls, threshold):
         return self.similarity(elem, ls) > threshold
 
-
-    def get_data(self, input): # TODO add regex for address and email
+    def get_data(self, input):
         user_data = []
         if self.get_current_question_name() == "Adress":
-            return [("Adress", re.search(address_re, input).group())]
+            try:
+                return [("Adress", re.search(address_re, input).group())]
+            except AttributeError:
+                return None
         elif self.get_current_question_name() == "E-Mail":
-            return [("E-Mail", re.search(mail_re, input).group())]
+            try:
+                return [("E-Mail", re.search(mail_re, input).group())]
+            except AttributeError:
+                return None
 
         # check if we are only looking for regex and not the SpaCy model
         current_question = self.get_current_question_data()
