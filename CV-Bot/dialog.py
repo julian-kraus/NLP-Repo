@@ -7,7 +7,6 @@ spacy.cli.download("en_core_web_sm")
 nlp = spacy.load('en_core_web_sm')
 
 
-
 class Dialog:
 
     def __init__(self):
@@ -17,7 +16,6 @@ class Dialog:
         print("Hello, I am CV-Bot. I am here to help you create your CV.")
         self.speak()
 
-
     def compute_avg_vec(self, list):
         vector = np.array([nlp(elem).vector for elem in list]).mean(axis=0)
         return vector
@@ -25,8 +23,10 @@ class Dialog:
     def get_current_stage_name(self):
         stage, _ = self.history[-1]
         return stage
+
     def get_current_stage_data(self):
         return data[self.get_current_stage_name()]
+
     def get_previous_stage(self):
         if len(self.history) > 1:
             stage, _ = self.history[-1]
@@ -40,7 +40,6 @@ class Dialog:
     def get_current_question_name(self):
         _, questions = self.history[-1]
         return questions[-1]
-
 
     def get_current_question_data(self):
         return data[self.get_current_stage_name()][self.get_current_question_name()]
@@ -77,7 +76,7 @@ class Dialog:
             if stage_text and stage_text != stage + ":\n":
                 text += stage_text
         if text != "":
-            print(text, end ="")
+            print(text, end="")
         else:
             print("I didn't found any data to show you")
 
@@ -91,7 +90,6 @@ class Dialog:
                 return None
         elif type == no_prev_error:
             raise Exception("Tried to look at previous data, without any existing")
-
 
     # ask according to the current position
     def ask(self, question):
@@ -127,10 +125,11 @@ class Dialog:
                 data_dict = current_question[data_store]
 
                 for key, value in data_dict.items():
-                    for input in list(processed_input):
-                        if input[0] in key:
-                            data_dict[key] = input[1]
-                            processed_input.remove(input)
+                    for inp in list(processed_input):
+                        if inp[0] in key:
+                            data_dict[key] = inp[1]
+                            processed_input.remove(inp)
+                            break;
 
                 self.print_data("")
 
@@ -144,7 +143,6 @@ class Dialog:
             return self.understanding(self.ask(self.get_current_question_name()))
         elif input_type == "answer":
             return self.get_data(user_input)
-
 
     # Possible returns are "answer" or the stage that is supposed to get printed
     def classify(self, user_input):
@@ -160,7 +158,7 @@ class Dialog:
                 return self.handle_error(user_input, check_data_error)
         return "answer"
 
-    def get_data(self, input): # TODO add regex for address and email
+    def get_data(self, input):  # TODO add regex for address and email
         user_data = []
         if self.get_current_question_name() == "Adress":
             return [("Adress", re.search(address_re, input).group())]
@@ -176,8 +174,10 @@ class Dialog:
             for type in necessary_entities:
                 if entity.label_ == type:
                     user_data.append(tuple((type, entity.text)))
-        return user_data
 
+        # when filtering dates remove possibly created duplicates
+        user_data = list(set([i for i in user_data]))
+        return user_data
 
     def sev_bullet_points(self):
         counter = 0
@@ -185,11 +185,11 @@ class Dialog:
         if position == 'Education' or position == 'Experience':
             while True:
                 inp = input('If you would like to add another ' + str(position) + 'step enter the '
-                                                                                       'information in '
-                                                                                       'the same format '
-                                                                                       'as already done. '
-                                                                                       'Otherwise press '
-                                                                                       'Enter' + "\n")
+                                                                                  'information in '
+                                                                                  'the same format '
+                                                                                  'as already done. '
+                                                                                  'Otherwise press '
+                                                                                  'Enter' + "\n")
 
                 if inp == "":
                     break;
@@ -201,9 +201,9 @@ class Dialog:
                     print(self.get_current_stage_data())
                     stage = self.get_current_stage_data()
                     stage[('Step' + str(counter + 2))] = [None,
-                       {("DATE", "CARDINAL", '1'): None,
-                        ("DATE", "CARDINAL", '2'): None,
-                        ("ORG", ""): None}]
+                                                          {("DATE", "CARDINAL", '1'): None,
+                                                           ("DATE", "CARDINAL", '2'): None,
+                                                           ("ORG", ""): None}]
                     self.add_question_to_history(('Step' + str(counter + 2)))
                     print(self.get_current_question_name())
                     current_question = self.get_current_question_data()
@@ -217,5 +217,5 @@ class Dialog:
                             if inp[0] in key:
                                 data_dict[key] = inp[1]
                                 processed_input.remove(inp)
+                                break;
                 print(data)
-

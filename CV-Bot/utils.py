@@ -28,7 +28,7 @@ def format_data(data, all_data, types):
 name_re = "([A-Z]|[a-z])[a-z]+ ([A-Z]|[a-z])[a-z]+( ([A-Z]|[a-z])[a-z]+)*"
 date_re = "([0-3]?[0-9].[0-1]?[0-9].[1-2][0-9][0-9][0-9])|([0-3]?[0-9]/[0-1]?[0-9]/[1-2][0-9][0-9][0-9])"
 mail_re = ".+@.+\..+"
-address_re = "[A-Z][a-z]*.? [0-9]*"
+address_re = "[A-Z][a-z]*? [0-9]*"
 educ_re = None
 exper_re = None
 social_re = None
@@ -73,15 +73,19 @@ data = {"Personal Data":
         },
     "Experience":
         {
-            "Step 1": ["Please state your work experience steps in bullet points or in the form of a "
-                       "continuous text.",
-                       {("DATE", "CARDINAL"): None}]
+            "Step 1": ["Please state an step of your working experience containing the company, a start date "
+                       "and a end date.",
+                       {("DATE", "CARDINAL", '1'): None,
+                        ("DATE", "CARDINAL", '2'): None,
+                        ("ORG", ""): None}]
         },
     "Social Engagement":
         {
-            "Step 1": ["Please state your social engagements steps in bullet points or in the form of a "
-                               "continuous text.",
-                               {("DATE", "CARDINAL"): None}]
+            "Step 1": ["Please state a social engagement step containing the the institution, a start date "
+                       "and a end date.",
+                       {("DATE", "CARDINAL", '1'): None,
+                        ("DATE", "CARDINAL", '2'): None,
+                        ("ORG", ""): None}]
         },
     "Skills":
         {
