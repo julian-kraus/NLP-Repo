@@ -3,10 +3,7 @@ import keyboard
 import numpy as np
 from numpy.linalg import norm
 import Levenshtein
-#from replit import clear
 
-spacy.cli.download("en_core_web_sm")
-nlp = spacy.load('en_core_web_sm')
 
 
 class Dialog:
@@ -15,7 +12,7 @@ class Dialog:
         self.data = data.copy()
         self.history = []
         self.check_data_vec = self.compute_avg_vec(check_data_questions)
-        #clear()
+
         print("Hello, I am CV-Bot. I am here to help you create your CV.")
         self.speak()
 
@@ -93,7 +90,7 @@ class Dialog:
                 return None
         elif type == no_prev_error:
             print("Sorry i didn't find any previous data.")
-            return self.ask(self.get_current_question_name())
+            return self.ask(self.get_current_question_name(), None)
 
     # ask according to the current position
     def ask(self, question, data_missing):
@@ -151,7 +148,7 @@ class Dialog:
 
     # Possible returns are "answer" or the stage that is supposed to get printed
     def classify(self, user_input):
-        if self.similar(user_input, check_data_questions, 0.4):
+        if self.similar(user_input, check_data_questions, 0.35):
             if self.check_input_for_words(user_input, check_prev):
                 if self.check_input_for_words(user_input, check_stage):
                     return self.get_previous_stage()
@@ -163,8 +160,12 @@ class Dialog:
                     if self.check_input_for_words(user_input, data_keys[key]):
                         return key
                     for q in self.data[key].keys():
+                        if q == "1":
+                            break
                         if self.check_input_for_words(user_input, data_keys[q]):
                             return q
+                if self.check_input_for_words(user_input, ["all", "every", "full"]):
+                    return ""
         else:
             return "answer"
 
@@ -226,7 +227,7 @@ class Dialog:
                 if inp[0] in key:
                     data_dict[key] = inp[1]
                     processed_input.remove(inp)
-                    break;
+                    break
         # check if all necessary information are given
         for key, value in data_dict.items():
             # value missing?
@@ -251,7 +252,7 @@ class Dialog:
                                                                                   'Enter' + "\n")
 
                 if inp == "":
-                    break;
+                    break
                 else:
                     # process the given input
                     processed_input = self.understanding(inp)
@@ -263,7 +264,7 @@ class Dialog:
                                                           {("DATE", "CARDINAL", '1'): None,
                                                            ("DATE", "CARDINAL", '2'): None,
                                                            ("ORG", ""): None}]
-                    self.add_question_to_history(('Step' + str(counter + 2)))
+                    self.add_question_to_history((str(counter + 2)))
                     current_question = self.get_current_question_data()
                     data_dict = current_question[data_store]
 
