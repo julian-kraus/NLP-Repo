@@ -1,31 +1,15 @@
 import spacy
 import re
 
+import contextlib
 
-spacy.cli.download("en_core_web_sm")
+with contextlib.redirect_stdout(None):
+    spacy.cli.download("en_core_web_sm")
 nlp = spacy.load('en_core_web_sm')
 
 
 # currently loading spacy during every execution
 
-
-# checks if the given input of the user actually contains the necessary information
-
-
-def format_data(data, all_data, types):
-    formated_data = []
-    if len(data) % len(types) != 0:
-        all_data_text = " ".join([d.text for d in all_data])
-        data_text = " ".join([d.text for d in data])
-        types_text = ", ".join([t for t in types])
-        raise Exception("format_data: Looked for " + types_text + " Found " + str(
-            len(data)) + " data, which isn't possible to put into " + len(
-            types) + " fields." + "\n data: " + data_text + "\n all data: " + all_data_text)
-
-    for i in range(len(data) % len(types)):
-        current_data_set = data[(i * len(types)):((i + 1) * len(types))]
-
-        formated_data.append(data[(i * len(types)):((i + 1) * len(types))])
 
 
 # filter for valid inputs by user
@@ -39,27 +23,6 @@ social_re = None
 skills_re = None
 interests_re = None
 
-
-def to_string(t):
-    return " ".join(t)
-
-
-def print_cv(user_data):
-    indent = "   "
-    cv = "C I R R I C U L U M   V I T A E\n"
-    for stage in data.keys():
-        contains_data = False
-        stage_text = stage + ":\n"
-        for sub_headline in user_data[stage].keys():
-            if user_data[stage][sub_headline][data_num] != None:
-                contains_data = True
-                stage_text += indent + sub_headline + ":\n"
-                stage_text += indent + indent + user_data[stage][sub_headline][data_num] + "\n"
-        if contains_data:
-            cv += stage_text + "\n"
-    print(cv)
-
-
 data = {"Personal Data":
     {
         "Name": ["What is your full name?", {("PERSON", ""): None}],
@@ -70,26 +33,26 @@ data = {"Personal Data":
     "Education":
         {
             "1": ["Please state an education step containing the teaching institution, a start date "
-                       "and a end date.",
-                       {("DATE", "CARDINAL", '1'): None,
-                        ("DATE", "CARDINAL", '2'): None,
-                        ("ORG", ""): None}]
+                  "and a end date.",
+                  {("DATE", "CARDINAL", '1'): None,
+                   ("DATE", "CARDINAL", '2'): None,
+                   ("ORG", ""): None}]
         },
     "Experience":
         {
             "1": ["Please state an step of your working experience containing the company, a start date "
-                       "and a end date.",
-                       {("DATE", "CARDINAL", '1'): None,
-                        ("DATE", "CARDINAL", '2'): None,
-                        ("ORG", ""): None}]
+                  "and a end date.",
+                  {("DATE", "CARDINAL", '1'): None,
+                   ("DATE", "CARDINAL", '2'): None,
+                   ("ORG", ""): None}]
         },
     "Social Engagement":
         {
             "1": ["Please state a social engagement step containing the the institution, a start date "
-                       "and a end date.",
-                       {("DATE", "CARDINAL", '1'): None,
-                        ("DATE", "CARDINAL", '2'): None,
-                        ("ORG", ""): None}]
+                  "and a end date.",
+                  {("DATE", "CARDINAL", '1'): None,
+                   ("DATE", "CARDINAL", '2'): None,
+                   ("ORG", ""): None}]
         },
     "Skills":
         {
@@ -106,36 +69,7 @@ data = {"Personal Data":
                            ("ORG", ""): None}]
         }
 }
-debug_data = {"Personal Data":
-    {
-        "Name": "Max Mustermann",
-        "Birthdate": "20.12.2017",
-        "E-Mail": "abc@gmail.com",
-        "Address": "Bauerstr. 4"
-    },
-    "Education":
-        {
-            "Education_history": "From 2010 to 2019 I went to the Louise Schroeder School in Germany. After that, "
-                                 "starting in 2020 I started my studies at the Technical University of Munich until 2023. "
-                                 "From 2022 to 2022 it did an exchange abroad at the University Pompue Fabra"
-        },
-    "Experience":
-        {
-            "Experience_history": "asdfasdfasdfasdfasdf"
-        },
-    "Social Engagement":
-        {
-            "Social_history": "asdfasdfasdfasdf"
-        },
-    "Skills":
-        {
-            "Skills": "asdfjashdfkajsdhf"
-        },
-    "Interests":
-        {
-            "Interests": "asdhfakjsdhfasdf"
-        },
-}
+
 
 check_data_questions = ["Can you show me what I entered for X?",
                         "What did you put as X?", "Show me my X.",
@@ -143,16 +77,21 @@ check_data_questions = ["Can you show me what I entered for X?",
                         "Tell me about X."
                         "Show me the last questions stage."
                         "What was saved in the X?",
+                        "What did I answer in the previous question?"
                         ]
 
 repeat_info_questions = ["Can you please repeat that",
                          "State the question again",
+                         "Can you repeat the question?"
                          ]
 
 stop_statements = ["I want to stop",
                    "I am finished",
                    "Stop the dialog",
+                   "Goodbye",
+                   "Bye"
                    ]
+
 
 def input_possible_values(lst):
     values = list(data_keys.values())
@@ -165,7 +104,8 @@ def input_possible_values(lst):
             result_list.append(elem)
     return result_list
 
-check_prev = ["Last", "last", "previous", "Previous"]
+
+check_prev = ["last", "previous", "before"]
 check_stage = ["stage", "phase", "section"]
 check_again = ["again", "more"]
 check_all = ["all", "every", "full"]
@@ -197,21 +137,21 @@ threshold = 0.6
 
 debug_text_data = [
     ["Max Mustermann",
-    "20/12/2017",
-    "abc@gmail.com",
-    "Bauerstr. 4",
-    "From 2010 to 2019 I went to the Louise Schroeder School in Germany.",
-    "After that starting in 2020 I started my studies at the Technical University of Munich until 2023.",
-    "",
-    "From 2010 to 2019 I went to the Louise Schroeder School in Germany.",
-    "After that starting in 2020 I started my studies at the Technical University of Munich until 2023.",
-    "",
-    "Programming and Languages",
-    "Programming and Languages",
-    "",
-    "Programming and Languages",
-    "Programming and Languages",
-    "",
-    "Goodbye"]
-    ]
-
+     "20/12/2017",
+     "abc@gmail.com",
+     "Bauerstr. 4",
+     "From 2010 to 2019 I went to the Louise Schroeder School in Germany.",
+     "After that starting in 2020 I started my studies at the Technical University of Munich until 2023.",
+     "",
+     "From 2010 to 2019 I went to the Louise Schroeder School in Germany.",
+     "After that starting in 2020 I started my studies at the Technical University of Munich until 2023.",
+     "From 2022 to 2022 it did an exchange abroad at the University Pompue Fabra",
+     "",
+     "Programming and Languages",
+     "Programming and Languages",
+     "",
+     "Programming and Languages",
+     "Programming and Languages",
+     "",
+     "Goodbye"]
+]

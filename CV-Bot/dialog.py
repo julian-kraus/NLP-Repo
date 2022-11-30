@@ -6,7 +6,6 @@ import Levenshtein
 import sys
 
 
-
 class Dialog:
 
     def __init__(self):
@@ -15,8 +14,25 @@ class Dialog:
         self.check_data_vec = self.compute_vec_list(input_possible_values(check_data_questions))
         self.repeat_question_vec = self.compute_vec_list(repeat_info_questions)
         self.goodbye_question_vec = self.compute_vec_list(stop_statements)
-        print("Hello, I am CV-Bot. I am here to help you create your CV.")
+
+        self.say("Hello, I am CV-Bot. I am here to help you create your CV.")
         self.speak()
+
+    def say(self, text):
+        format_ = '\033[33;1m'
+        end = '\033[0m'
+        print(format_ + text + end)
+
+    def request(self, text):
+        format_ = '\033[33;1m'
+        end = '\033[0m'
+        return input(format_ + text + end)
+
+    def print_debug(self, text):
+        if debug_info:
+            format_ = '\033[31m'
+            end = '\033[0m'
+            print("DEBUG: " + format_ + text + end)
 
     def compute_vec_list(self, list):
         return [nlp(elem).vector for elem in list]
@@ -81,20 +97,24 @@ class Dialog:
         if text != "":
             print(text, end="")
 
-    def goodbye(self): # Todo add some more prints
+    def goodbye(self):
+        self.say("I hope I could help you with your CV. Until another time.")
+        self.say("I'll print your CV so you can use it for your next application.")
+        self.say("Goodbye!\n")
         print("C I R R I C U L U M   V I T A E\n")
         self.print_data("")
-        sys.exit("Goodbye")
+        sys.exit()
+
     def handle_error(self, user_input, type):
         if type == check_data_error:
-            print("Sorry unfortunately we couldn't find the data you were looking for.")
+            self.say("Sorry unfortunately we couldn't find the data you were looking for.")
             new_input = input("Do you want to continue or try again? \n")
             if self.check_input_for_words(new_input, check_again):
-                return self.classify(input("Please state your request again. \n"))
+                return self.classify(self.request("Please state your request again. \n"))
             else:
                 return None
         elif type == no_prev_error:
-            print("Sorry i didn't find any previous data.")
+            self.say("Sorry i didn't find any previous data.")
             return None
 
     # ask according to the current position
@@ -102,16 +122,20 @@ class Dialog:
         # get the answer from the user or from the debug data
         current_question = self.get_current_question_data()
         if debug_text:
-            print(current_question[question_num])
+            self.say(current_question[question_num])
             answer = debug_text_data[debug_text_num].pop(0)
-            print("Debug -- User: " + answer)
+            print(answer)
         else:
             if data_missing is not None:
-                answer = input(str(data_missing) + ' - question: ' + current_question[question_num] + "\n")
+                answer = self.request(str(data_missing) + ' - question: ' + current_question[question_num] + "\n")
             else:
-                answer = input(current_question[question_num] + "\n")
-        if debug_info:
-            print("Debug -- received answer: " + answer)
+                answer = self.request(current_question[question_num] + "\n")
+
+        self.print_debug("Received answer: " + answer)
+
+        if answer == "":
+            self.say("Sorry I didn't quite catch that.")
+            return self.ask(question, data_missing)
         return answer
 
     # agent starts to speak with user
@@ -119,7 +143,7 @@ class Dialog:
         for position in self.data.keys():
             # add the new stage to the history
             self.add_new_stage(position)
-            print("Now we are going to go to your " + position)
+            self.say("Now we are going to go to your " + position)
             # get the value of the dict of the current stage (eg, Name, Birthdate ...)
             current_stage = self.get_current_stage_data()
             # go through all questions for the current stage, e.g. What is your name?
@@ -128,8 +152,7 @@ class Dialog:
                 self.add_question_to_history(question)
                 processed_input = self.understanding(self.ask(question, None))
 
-                if debug_info:
-                    print('Debug -- processed input: ' + str(processed_input))
+                self.print_debug("Processed input: " + str(processed_input))
 
                 # store data
                 current_question = self.get_current_question_data()
@@ -141,16 +164,19 @@ class Dialog:
                 self.sev_bullet_points(question)
 
         self.goodbye()
+
     def understanding(self, user_input):
         type, data = self.classify(user_input)
-        if debug_info:
-            print("Debug -- classified input type:" + type)
+
+        self.print_debug("Classified input type:" + type)
+
         if type == "check_data":
             self.print_data(data)
             return self.understanding(self.ask(self.get_current_question_name(), None))
         elif type == "goodbye":
             self.goodbye()
         elif type == "repeat":
+            self.say("Sure, no problem.")
             return self.understanding(self.ask(self.get_current_question_name(), None))
         else:
             return self.get_data(data)
@@ -188,8 +214,10 @@ class Dialog:
         max_sim = max(check_sim, repeat_sim, goodbye_sim)
         if max_sim < threshold:
             max_sim = 0
-        if debug_info:
-            print("Debug -- Similarities \ncheck_sim: " + str(check_sim) + ", repeat_sim: " + str(repeat_sim) + " goodbye_sim: " + str(goodbye_sim))
+
+        self.print_debug("Similarities check_sim: " + str(check_sim) + ", repeat_sim: " + str(
+                repeat_sim) + " goodbye_sim: " + str(goodbye_sim))
+
         if max_sim == 0:
             return "answer", user_input
         elif max_sim == check_sim:
@@ -201,6 +229,7 @@ class Dialog:
 
     def check_input_for_words(self, user_input, words):
         return any(str.lower(ele) in str.lower(user_input) for ele in words)
+
     def similarity(self, elem_vec, ls_vec):
         # Computes the max cosine similarity of the elem_vec to one of the ls_vecs
         max_sim = 0.0
@@ -251,11 +280,13 @@ class Dialog:
             if value == None:
                 # until we have fitting input keep asking
                 while True:
-                    question_missing_info = 'The following information seems to be missing: ' + str(key[0]) + ' Please enter the information: \n'
+                    question_missing_info = 'The following information seems to be missing: ' + str(
+                        key[0]) + ' Please enter the information: \n'
                     processed_input = self.understanding(self.ask(question, question_missing_info))
                     if len(processed_input) != 0:
                         data_dict[key] = processed_input[0][1]
                         break;
+
     def sev_bullet_points(self, question):
         counter = 0
         position = self.get_current_stage_name()
@@ -267,7 +298,7 @@ class Dialog:
                 if debug_text:
                     inp = debug_text_data[debug_text_num].pop()
                 else:
-                    inp = input(q)
+                    inp = self.request(q)
 
                 if inp == "":
                     break
@@ -279,19 +310,16 @@ class Dialog:
 
                     stage = self.get_current_stage_data()
                     stage[(str(counter + 2))] = [q,
-                                                          {("DATE", "CARDINAL", '1'): None,
-                                                           ("DATE", "CARDINAL", '2'): None,
-                                                           ("ORG", ""): None}]
+                                                 {("DATE", "CARDINAL", '1'): None,
+                                                  ("DATE", "CARDINAL", '2'): None,
+                                                  ("ORG", ""): None}]
                     self.add_question_to_history((str(counter + 2)))
                     current_question = self.get_current_question_data()
                     data_dict = current_question[data_store]
 
-                    if debug_info:
-                        print(self.get_current_question_name())
-                        print(data_dict)
-                        print(current_question)
-                        print(self.get_current_stage_data())
+                    self.print_debug(self.get_current_question_name() + "\n" + str(data_dict) + "\n" + current_question + "\n" + str(self.get_current_question_data()))
 
                     self.map_data(data_dict, processed_input, question)
-                if debug_info:
-                    print(data)
+
+                self.print_debug(str(data))
+
