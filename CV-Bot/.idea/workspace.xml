@@ -7,7 +7,6 @@
     <list default="true" id="5649b55e-c08f-47c7-b4e3-720abb9a88ae" name="Changes" comment="Some stuff">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialog.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <list id="d940c511-92f0-4fb1-bee5-601ff7e2efda" name="Changes by danielbier" comment="" />
@@ -116,6 +115,8 @@
       <workItem from="1669389294498" duration="687000" />
       <workItem from="1669464900000" duration="7630000" />
       <workItem from="1669628196853" duration="6406000" />
+      <workItem from="1669713829862" duration="16000" />
+      <workItem from="1669808863620" duration="5954000" />
     </task>
     <task id="LOCAL-00001" summary="add readme.md">
       <created>1667490598481</created>
@@ -159,7 +160,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669647976514</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Some stuff">
+      <created>1669651321774</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1669651321774</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -189,18 +197,33 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/dialog.py</url>
-          <line>139</line>
-          <option name="timeStamp" value="4" />
+          <line>144</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main.py</url>
+          <line>6</line>
+          <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/dialog.py</url>
-          <line>60</line>
-          <option name="timeStamp" value="5" />
+          <line>105</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/dialog.py</url>
+          <line>155</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/dialog.py</url>
+          <line>216</line>
+          <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/CV_Bot$main.coverage" NAME="main Coverage Results" MODIFIED="1669651296867" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CV_Bot$main.coverage" NAME="main Coverage Results" MODIFIED="1669814804846" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

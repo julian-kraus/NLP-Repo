@@ -32,7 +32,7 @@ def format_data(data, all_data, types):
 name_re = "([A-Z]|[a-z])[a-z]+ ([A-Z]|[a-z])[a-z]+( ([A-Z]|[a-z])[a-z]+)*"
 date_re = "([0-3]?[0-9].[0-1]?[0-9].[1-2][0-9][0-9][0-9])|([0-3]?[0-9]/[0-1]?[0-9]/[1-2][0-9][0-9][0-9])"
 mail_re = ".+@.+\..+"
-address_re = "[A-Z][a-z]*? [0-9]*"
+address_re = "[A-Z]+[a-z]+.? [0-9]+"
 educ_re = None
 exper_re = None
 social_re = None
@@ -65,7 +65,7 @@ data = {"Personal Data":
         "Name": ["What is your full name?", {("PERSON", ""): None}],
         "Birthdate": ["What is your date of birth?", {("DATE", "CARDINAL"): None}],
         "E-Mail": ["Please tell me your email.", {("E-Mail", ""): None}],
-        "Address": ["Please state your address.", {("Address", "CARDINAL"): None}]
+        "Address": ["Please state your address.", {("Address", ""): None}]
     },
     "Education":
         {
@@ -138,22 +138,37 @@ debug_data = {"Personal Data":
 }
 
 check_data_questions = ["Can you show me what I entered for X?",
-                        "What did you put as?", "Show me my X.",
+                        "What did you put as X?", "Show me my X.",
                         "What are my X?",
-                        "Tell me about the previous Information."
+                        "Tell me about X."
                         "Show me the last questions stage."
                         "What was saved in the X?",
-
-                        "Can you show me what I entered for X",
-                        "What did you put as?", "Show me my X",
-                        "What are my X",
-                        "Tell me about the previous stage"
-                        "Show me the last questions section"
-                        "What was saved in the X"
                         ]
+
+repeat_info_questions = ["Can you please repeat that",
+                         "State the question again",
+                         ]
+
+stop_statements = ["I want to stop",
+                   "I am finished",
+                   "Stop the dialog",
+                   ]
+
+def input_possible_values(lst):
+    values = list(data_keys.values())
+    result_list = []
+    for elem in lst:
+        if "X" in elem:
+            for val in [i for sub in values for i in sub]:
+                result_list.append(str.replace(elem, "X", val))
+        else:
+            result_list.append(elem)
+    return result_list
+
 check_prev = ["Last", "last", "previous", "Previous"]
 check_stage = ["stage", "phase", "section"]
 check_again = ["again", "more"]
+check_all = ["all", "every", "full"]
 data_keys = {
     "Personal Data": ["Personal", "Personal", "About me"],
     "Name": ["Name"],
@@ -174,5 +189,29 @@ no_prev_error = "prev"
 question_num = 0
 fun_num = 1
 data_num = 2
-debug = False
+debug_info = True
+debug_text = False
+debug_text_num = 0
 data_store = 1
+threshold = 0.6
+
+debug_text_data = [
+    ["Max Mustermann",
+    "20/12/2017",
+    "abc@gmail.com",
+    "Bauerstr. 4",
+    "From 2010 to 2019 I went to the Louise Schroeder School in Germany.",
+    "After that starting in 2020 I started my studies at the Technical University of Munich until 2023.",
+    "",
+    "From 2010 to 2019 I went to the Louise Schroeder School in Germany.",
+    "After that starting in 2020 I started my studies at the Technical University of Munich until 2023.",
+    "",
+    "Programming and Languages",
+    "Programming and Languages",
+    "",
+    "Programming and Languages",
+    "Programming and Languages",
+    "",
+    "Goodbye"]
+    ]
+

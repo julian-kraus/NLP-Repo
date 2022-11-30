@@ -1,0 +1,212 @@
+Index: dialog.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from utils import *\r\nimport keyboard\r\nimport numpy as np\r\nfrom numpy.linalg import norm\r\nimport Levenshtein\r\n#from replit import clear\r\n\r\nspacy.cli.download(\"en_core_web_sm\")\r\nnlp = spacy.load('en_core_web_sm')\r\n\r\n\r\nclass Dialog:\r\n\r\n    def __init__(self):\r\n        self.data = data.copy()\r\n        self.history = []\r\n        self.check_data_vec = self.compute_avg_vec(check_data_questions)\r\n        #clear()\r\n        print(\"Hello, I am CV-Bot. I am here to help you create your CV.\")\r\n        self.speak()\r\n\r\n    def compute_avg_vec(self, list):\r\n        vector = np.array([nlp(elem).vector for elem in list]).mean(axis=0)\r\n        return vector\r\n\r\n    def get_current_stage_name(self):\r\n        stage, _ = self.history[-1]\r\n        return stage\r\n\r\n    def get_current_stage_data(self):\r\n        return data[self.get_current_stage_name()]\r\n\r\n    def get_previous_stage(self):\r\n        if len(self.history) > 1:\r\n            stage, _ = self.history[-1]\r\n            return stage\r\n        else:\r\n            return self.handle_error(\"\", no_prev_error)\r\n\r\n    def add_new_stage(self, position):\r\n        self.history.append((position, []))\r\n\r\n    def get_current_question_name(self):\r\n        _, questions = self.history[-1]\r\n        return questions[-1]\r\n\r\n    def get_current_question_data(self):\r\n        return data[self.get_current_stage_name()][self.get_current_question_name()]\r\n\r\n    def get_previous_question_name(self):\r\n        _, questions = self.history[-1]\r\n        if len(questions) > 1:\r\n            return questions[-2]\r\n        else:\r\n            return self.handle_error(\"\", no_prev_error)\r\n\r\n    def add_question_to_history(self, question):\r\n        self.history[-1][1].append(question)\r\n\r\n    def print_data(self, elem):\r\n        if elem is None:\r\n            return\r\n        text = \"\"\r\n        show = False\r\n        for stage in self.data.keys():\r\n\r\n            stage_text = \"\"\r\n            if stage.__contains__(elem):\r\n                stage_text += stage + \":\\n\"\r\n\r\n            for sub_stage in self.data[stage]:\r\n                if stage.__contains__(elem) or sub_stage.__contains__(elem):\r\n                    sub_stage_text = sub_stage + \":\"\r\n                    for data in list(self.data[stage][sub_stage][1].values()):\r\n                        if data:\r\n                            sub_stage_text += \" \" + str(data)\r\n                    if sub_stage_text != sub_stage + \":\":\r\n                        stage_text += sub_stage_text + \"\\n\"\r\n            if stage_text and stage_text != stage + \":\\n\":\r\n                text += stage_text\r\n        if text != \"\":\r\n            print(text, end=\"\")\r\n        else:\r\n            print(\"I didn't found any data to show you\")\r\n\r\n    def handle_error(self, user_input, type):\r\n        if type == check_data_error:\r\n            print(\"Sorry unfortunately we couldn't find the data you were looking for.\")\r\n            new_input = input(\"Do you want to continue or try again? \\n\")\r\n            if self.check_input_for_words(new_input, check_again):\r\n                return self.classify(input(\"Please state your request again. \\n\"))\r\n            else:\r\n                return None\r\n        elif type == no_prev_error:\r\n            print(\"Sorry i didn't find any previous data.\")\r\n            return self.ask(self.get_current_question_name())\r\n\r\n    # ask according to the current position\r\n    def ask(self, question, data_missing):\r\n        # get the answer from the user or from the debug data\r\n        current_question = self.get_current_question_data()\r\n        if debug:\r\n            print(current_question[question_num])\r\n            answer = debug_data[self.get_current_stage_name()][question]\r\n        else:\r\n            if data_missing != None:\r\n                answer = input(str(data_missing) + ' - question: - ' + current_question[question_num] + \"\\n\")\r\n            else:\r\n                answer = input(current_question[question_num] + \"\\n\")\r\n        if debug:\r\n            print(answer)\r\n        return answer\r\n\r\n    # agent starts to speak with user\r\n    def speak(self):\r\n        for position in self.data.keys():\r\n            # add the new stage to the history\r\n            self.add_new_stage(position)\r\n            print(\"Now we are going to go to your \" + position)\r\n            # get the value of the dict of the current stage (eg, Name, Birthdate ...)\r\n            current_stage = self.get_current_stage_data()\r\n            # go through all questions for the current stage, e.g. What is your name?\r\n            for question in list(current_stage):\r\n                # get processed input by user\r\n                self.add_question_to_history(question)\r\n                processed_input = self.understanding(self.ask(question, None))\r\n\r\n                if debug:\r\n                    print('processed input')\r\n                    print(processed_input)\r\n\r\n                # store data\r\n                current_question = self.get_current_question_data()\r\n                data_dict = current_question[data_store]\r\n\r\n                self.map_data(data_dict, processed_input, question)\r\n\r\n                if debug:\r\n                    self.print_data(\"\")\r\n\r\n                # education and working experience\r\n                self.sev_bullet_points(question)\r\n\r\n    def understanding(self, user_input):\r\n        input_type = self.classify(user_input)\r\n        if not input_type or input_type != \"answer\":\r\n            self.print_data(input_type)\r\n            return self.understanding(self.ask(self.get_current_question_name(), None))\r\n        elif input_type == \"answer\":\r\n            return self.get_data(user_input)\r\n\r\n    # Possible returns are \"answer\" or the stage that is supposed to get printed\r\n    def classify(self, user_input):\r\n        if self.similar(user_input, check_data_questions, 0.4):\r\n            if self.check_input_for_words(user_input, check_prev):\r\n                if self.check_input_for_words(user_input, check_stage):\r\n                    return self.get_previous_stage()\r\n                else:\r\n                    return self.get_previous_question_name()\r\n            else:\r\n                # return self.get_most_similar(user_input, data_keys)\r\n                for key in self.data.keys():\r\n                    if self.check_input_for_words(user_input, data_keys[key]):\r\n                        return key\r\n                    for q in self.data[key].keys():\r\n                        if self.check_input_for_words(user_input, data_keys[q]):\r\n                            return q\r\n        else:\r\n            return \"answer\"\r\n\r\n    def check_input_for_words(self, user_input, words):\r\n        return any(str.lower(ele) in str.lower(user_input) for ele in words)\r\n\r\n    # def get_most_similar(self, input, compare):\r\n    #     d = {}\r\n    #     for elem in compare:\r\n    #         d[elem] = Levenshtein.distance(input, elem)  # self.similarity(input, elem)\r\n    #     max_val = max(d.values())\r\n    #     for key, value in d.items():\r\n    #         if max_val == value:\r\n    #             return key\r\n    #     return self.handle_error(input, check_data_error)\r\n\r\n    def similarity(self, elem, ls):\r\n        elem_vec = np.array(nlp(elem).vector)\r\n        if type(ls) == type([]):\r\n            ls_vec = self.compute_avg_vec(ls)\r\n        else:\r\n            ls_vec = np.array(nlp(ls).vector)\r\n        cosine = np.dot(elem_vec, ls_vec) / (norm(elem_vec) * norm(ls_vec))\r\n        return cosine\r\n\r\n    def similar(self, elem, ls, threshold):\r\n        return self.similarity(elem, ls) > threshold\r\n\r\n    def get_data(self, input):\r\n        user_data = []\r\n        if self.get_current_question_name() == \"Adress\":\r\n            try:\r\n                return [(\"Adress\", re.search(address_re, input).group())]\r\n            except AttributeError:\r\n                return None\r\n        elif self.get_current_question_name() == \"E-Mail\":\r\n            try:\r\n                return [(\"E-Mail\", re.search(mail_re, input).group())]\r\n            except AttributeError:\r\n                return None\r\n\r\n        # check if we are only looking for regex and not the SpaCy model\r\n        current_question = self.get_current_question_data()\r\n        necessary_entities = [element for innerList in current_question[fun_num].keys() for element in\r\n                              innerList]\r\n        doc = nlp(input)\r\n        for entity in doc.ents:\r\n            for type in necessary_entities:\r\n                if entity.label_ == type:\r\n                    user_data.append(tuple((type, entity.text)))\r\n\r\n        # when filtering dates remove possibly created duplicates\r\n        user_data = list(set([i for i in user_data]))\r\n        return user_data\r\n\r\n    def map_data(self, data_dict, processed_input, question):\r\n        print('before mapped')\r\n        print(data)\r\n        for key, value in data_dict.items():\r\n            for inp in list(processed_input):\r\n                if inp[0] in key:\r\n                    data_dict[key] = inp[1]\r\n                    processed_input.remove(inp)\r\n                    break;\r\n        print('data_dict')\r\n        print(data_dict)\r\n        # check if all necessary information are given\r\n        for key, value in data_dict.items():\r\n            # value missing?\r\n            if value == None:\r\n                # until we have fitting input keep asking\r\n                while True:\r\n                    question_missing_info = 'The following information seems to be missing: ' + str(key[0]) + ' Please enter the information: \\n'\r\n                    processed_input = self.understanding(self.ask(question, question_missing_info))\r\n                    print(processed_input)\r\n                    if len(processed_input) != 0:\r\n                        data_dict[key] = processed_input[0][1]\r\n                        break;\r\n        print(data)\r\n    def sev_bullet_points(self, question):\r\n        counter = 0\r\n        position = self.get_current_stage_name()\r\n        if position == 'Education' or position == 'Experience':\r\n            while True:\r\n                inp = input('If you would like to add another ' + str(position) + 'step enter the '\r\n                                                                                  'information in '\r\n                                                                                  'the same format '\r\n                                                                                  'as already done. '\r\n                                                                                  'Otherwise press '\r\n                                                                                  'Enter' + \"\\n\")\r\n\r\n                if inp == \"\":\r\n                    break;\r\n                else:\r\n                    # process the given input\r\n                    processed_input = self.understanding(inp)\r\n\r\n                    # create new dictionary element\r\n\r\n                    stage = self.get_current_stage_data()\r\n                    stage[('Step' + str(counter + 2))] = [None,\r\n                                                          {(\"DATE\", \"CARDINAL\", '1'): None,\r\n                                                           (\"DATE\", \"CARDINAL\", '2'): None,\r\n                                                           (\"ORG\", \"\"): None}]\r\n                    self.add_question_to_history(('Step' + str(counter + 2)))\r\n                    current_question = self.get_current_question_data()\r\n                    data_dict = current_question[data_store]\r\n\r\n                    if debug:\r\n                        print(self.get_current_stage_data())\r\n                        print(self.get_current_question_name())\r\n                        print(data_dict)\r\n                        print(current_question)\r\n\r\n                    self.map_data(data_dict, processed_input, question)\r\n                if debug:\r\n                    print(data)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dialog.py b/dialog.py
+--- a/dialog.py	(revision 1e75cab9266e7d17a166d43d1b53cd0467e66ce2)
++++ b/dialog.py	(date 1669647440124)
+@@ -3,10 +3,7 @@
+ import numpy as np
+ from numpy.linalg import norm
+ import Levenshtein
+-#from replit import clear
+ 
+-spacy.cli.download("en_core_web_sm")
+-nlp = spacy.load('en_core_web_sm')
+ 
+ 
+ class Dialog:
+@@ -15,7 +12,7 @@
+         self.data = data.copy()
+         self.history = []
+         self.check_data_vec = self.compute_avg_vec(check_data_questions)
+-        #clear()
++
+         print("Hello, I am CV-Bot. I am here to help you create your CV.")
+         self.speak()
+ 
+@@ -163,8 +160,12 @@
+                     if self.check_input_for_words(user_input, data_keys[key]):
+                         return key
+                     for q in self.data[key].keys():
++                        if q == "1":
++                            break
+                         if self.check_input_for_words(user_input, data_keys[q]):
+                             return q
++                if self.check_input_for_words(user_input, ["all", "every", "full"]):
++                    return ""
+         else:
+             return "answer"
+ 
+@@ -228,7 +229,7 @@
+                 if inp[0] in key:
+                     data_dict[key] = inp[1]
+                     processed_input.remove(inp)
+-                    break;
++                    break
+         print('data_dict')
+         print(data_dict)
+         # check if all necessary information are given
+@@ -257,7 +258,7 @@
+                                                                                   'Enter' + "\n")
+ 
+                 if inp == "":
+-                    break;
++                    break
+                 else:
+                     # process the given input
+                     processed_input = self.understanding(inp)
+@@ -269,7 +270,7 @@
+                                                           {("DATE", "CARDINAL", '1'): None,
+                                                            ("DATE", "CARDINAL", '2'): None,
+                                                            ("ORG", ""): None}]
+-                    self.add_question_to_history(('Step' + str(counter + 2)))
++                    self.add_question_to_history((str(counter + 2)))
+                     current_question = self.get_current_question_data()
+                     data_dict = current_question[data_store]
+ 
+Index: readme.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># Readme\r\n## Cv-Bot\r\n\r\n### Current status\r\n#### Goal:\r\n\r\nThe goal is to create, based on the information the user has given with the input fields, to create a CV containing all \r\nnecessary personal information. Therefore, the CV has a defined structure which can be viewed in the utils.py File.\r\nPart of the project is using trained pipelines/models\r\n\r\n#### Execution: \r\nYou need to have the package spaCy. Here is the installation guide https://spacy.io/usage \r\nTo execute the CV-Bot you can either set the debug variable in utils.py to True and then run the main class (There is already example input and you dont need to enter any information via the input field). \r\nOr you can set the variable to False and the enter your own input. \r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/readme.md b/readme.md
+--- a/readme.md	(revision 1e75cab9266e7d17a166d43d1b53cd0467e66ce2)
++++ b/readme.md	(date 1669645921674)
+@@ -2,6 +2,13 @@
+ ## Cv-Bot
+ 
+ ### Current status
++Current features: 
++- Entered wrong format? 
++    - Ask question for missing information
++- Ask for data to be displayed
++  - Previous or specific works, regardless whether it is a question or stage
++  - If it doesn't get recognized, user gets the possibility to enter again or continue
++
+ #### Goal:
+ 
+ The goal is to create, based on the information the user has given with the input fields, to create a CV containing all 
+Index: utils.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import spacy\r\nimport re\r\n\r\nspacy.cli.download(\"en_core_web_sm\")\r\nnlp = spacy.load('en_core_web_sm')\r\n\r\n\r\n# currently loading spacy during every execution\r\n\r\n\r\n# checks if the given input of the user actually contains the necessary information\r\n\r\n\r\ndef format_data(data, all_data, types):\r\n    formated_data = []\r\n    if len(data) % len(types) != 0:\r\n        all_data_text = \" \".join([d.text for d in all_data])\r\n        data_text = \" \".join([d.text for d in data])\r\n        types_text = \", \".join([t for t in types])\r\n        raise Exception(\"format_data: Looked for \" + types_text + \" Found \" + str(\r\n            len(data)) + \" data, which isn't possible to put into \" + len(\r\n            types) + \" fields.\" + \"\\n data: \" + data_text + \"\\n all data: \" + all_data_text)\r\n\r\n    for i in range(len(data) % len(types)):\r\n        current_data_set = data[(i * len(types)):((i + 1) * len(types))]\r\n\r\n        formated_data.append(data[(i * len(types)):((i + 1) * len(types))])\r\n\r\n\r\n# filter for valid inputs by user\r\nname_re = \"([A-Z]|[a-z])[a-z]+ ([A-Z]|[a-z])[a-z]+( ([A-Z]|[a-z])[a-z]+)*\"\r\ndate_re = \"([0-3]?[0-9].[0-1]?[0-9].[1-2][0-9][0-9][0-9])|([0-3]?[0-9]/[0-1]?[0-9]/[1-2][0-9][0-9][0-9])\"\r\nmail_re = \".+@.+\\..+\"\r\naddress_re = \"[A-Z][a-z]*? [0-9]*\"\r\neduc_re = None\r\nexper_re = None\r\nsocial_re = None\r\nskills_re = None\r\ninterests_re = None\r\n\r\n\r\ndef to_string(t):\r\n    return \" \".join(t)\r\n\r\n\r\ndef print_cv(user_data):\r\n    indent = \"   \"\r\n    cv = \"C I R R I C U L U M   V I T A E\\n\"\r\n    for stage in data.keys():\r\n        contains_data = False\r\n        stage_text = stage + \":\\n\"\r\n        for sub_headline in user_data[stage].keys():\r\n            if user_data[stage][sub_headline][data_num] != None:\r\n                contains_data = True\r\n                stage_text += indent + sub_headline + \":\\n\"\r\n                stage_text += indent + indent + user_data[stage][sub_headline][data_num] + \"\\n\"\r\n        if contains_data:\r\n            cv += stage_text + \"\\n\"\r\n    print(cv)\r\n\r\n\r\ndata = {\"Personal Data\":\r\n    {\r\n        \"Name\": [\"What is your full name?\", {(\"PERSON\", \"\"): None}],\r\n        \"Birthdate\": [\"What is your date of birth?\", {(\"DATE\", \"CARDINAL\"): None}],\r\n        \"E-Mail\": [\"Please tell me your email.\", {(\"E-Mail\", \"\"): None}],\r\n        \"Address\": [\"Please state your address.\", {(\"Address\", \"CARDINAL\"): None}]\r\n    },\r\n    \"Education\":\r\n        {\r\n            \"Step 1\": [\"Please state an education step containing the teaching institution, a start date \"\r\n                       \"and a end date.\",\r\n                       {(\"DATE\", \"CARDINAL\", '1'): None,\r\n                        (\"DATE\", \"CARDINAL\", '2'): None,\r\n                        (\"ORG\", \"\"): None}]\r\n        },\r\n    \"Experience\":\r\n        {\r\n            \"Step 1\": [\"Please state an step of your working experience containing the company, a start date \"\r\n                       \"and a end date.\",\r\n                       {(\"DATE\", \"CARDINAL\", '1'): None,\r\n                        (\"DATE\", \"CARDINAL\", '2'): None,\r\n                        (\"ORG\", \"\"): None}]\r\n        },\r\n    \"Social Engagement\":\r\n        {\r\n            \"Step 1\": [\"Please state a social engagement step containing the the institution, a start date \"\r\n                       \"and a end date.\",\r\n                       {(\"DATE\", \"CARDINAL\", '1'): None,\r\n                        (\"DATE\", \"CARDINAL\", '2'): None,\r\n                        (\"ORG\", \"\"): None}]\r\n        },\r\n    \"Skills\":\r\n        {\r\n            \"Skills\": [\"Please state your work experience steps in bullet points or in the form of a \"\r\n                       \"continuous text.\",\r\n                       {(\"DATE\", \"CARDINAL\"): None,\r\n                        (\"DATE\", \"CARDINAL\"): None,\r\n                        (\"ORG\", \"\"): None}]\r\n        },\r\n    \"Interests\":\r\n        {\r\n            \"Interests\": [\"If you would like to state any personal interests in your CV please enter them here: \",\r\n                          {(\"DATE\", \"CARDINAL\"): None,\r\n                           (\"DATE\", \"CARDINAL\"): None,\r\n                           (\"ORG\", \"\"): None}]\r\n        }\r\n}\r\ndebug_data = {\"Personal Data\":\r\n    {\r\n        \"Name\": \"Max Mustermann\",\r\n        \"Birthdate\": \"20.12.2017\",\r\n        \"E-Mail\": \"abc@gmail.com\",\r\n        \"Address\": \"Bauerstr. 4\"\r\n    },\r\n    \"Education\":\r\n        {\r\n            \"Education_history\": \"From 2010 to 2019 I went to the Louise Schroeder School in Germany. After that, \"\r\n                                 \"starting in 2020 I started my studies at the Technical University of Munich until 2023. \"\r\n                                 \"From 2022 to 2022 it did an exchange abroad at the University Pompue Fabra\"\r\n        },\r\n    \"Experience\":\r\n        {\r\n            \"Experience_history\": \"asdfasdfasdfasdfasdf\"\r\n        },\r\n    \"Social Engagement\":\r\n        {\r\n            \"Social_history\": \"asdfasdfasdfasdf\"\r\n        },\r\n    \"Skills\":\r\n        {\r\n            \"Skills\": \"asdfjashdfkajsdhf\"\r\n        },\r\n    \"Interests\":\r\n        {\r\n            \"Interests\": \"asdhfakjsdhfasdf\"\r\n        },\r\n}\r\n\r\ncheck_data_questions = [\"Can you show me what I entered for X?\",\r\n                        \"What did you put as?\", \"Show me my X.\",\r\n                        \"What are my X?\",\r\n                        \"Tell me about the previous Information.\"\r\n                        \"Show me the last questions input.\"\r\n                        \"What was saved in the X\"\r\n                        ]\r\ncheck_prev = [\"Last\", \"last\", \"previous\", \"Previous\"]\r\ncheck_stage = [\"stage\", \"phase\", \"section\"]\r\ncheck_again = [\"again\", \"more\"]\r\ndata_keys = {\r\n    \"Personal Data\": [\"Personal\", \"Personal\", \"About me\"],\r\n    \"Name\": [\"Name\"],\r\n    \"Birthdate\": [\"Date\"],\r\n    \"E-Mail\": [\"Mail\"],\r\n    \"Address\": [\"Adress\"],\r\n    \"Education\": [\"Education\", \"School\", \"University\"],\r\n    \"Skills\": [\"Skill\", \"Action\"],\r\n    \"Social Engagement\": [\"Social\", \"Engagement\"],\r\n    \"Experience\": [\"Experience\"],\r\n    \"Interests\": [\"Interests\"]\r\n}\r\n\r\n# Error codes\r\ncheck_data_error = \"check_data_not_found\"\r\nno_prev_error = \"prev\"\r\n\r\nquestion_num = 0\r\nfun_num = 1\r\ndata_num = 2\r\ndebug = False\r\ndata_store = 1\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/utils.py b/utils.py
+--- a/utils.py	(revision 1e75cab9266e7d17a166d43d1b53cd0467e66ce2)
++++ b/utils.py	(date 1669647218543)
+@@ -68,7 +68,7 @@
+     },
+     "Education":
+         {
+-            "Step 1": ["Please state an education step containing the teaching institution, a start date "
++            "1": ["Please state an education step containing the teaching institution, a start date "
+                        "and a end date.",
+                        {("DATE", "CARDINAL", '1'): None,
+                         ("DATE", "CARDINAL", '2'): None,
+@@ -76,7 +76,7 @@
+         },
+     "Experience":
+         {
+-            "Step 1": ["Please state an step of your working experience containing the company, a start date "
++            "1": ["Please state an step of your working experience containing the company, a start date "
+                        "and a end date.",
+                        {("DATE", "CARDINAL", '1'): None,
+                         ("DATE", "CARDINAL", '2'): None,
+@@ -84,7 +84,7 @@
+         },
+     "Social Engagement":
+         {
+-            "Step 1": ["Please state a social engagement step containing the the institution, a start date "
++            "1": ["Please state a social engagement step containing the the institution, a start date "
+                        "and a end date.",
+                        {("DATE", "CARDINAL", '1'): None,
+                         ("DATE", "CARDINAL", '2'): None,
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"5649b55e-c08f-47c7-b4e3-720abb9a88ae\" name=\"Changes\" comment=\"add printing etc\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/CV-Bot.iml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/CV-Bot.iml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/misc.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/misc.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/dialog.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/dialog.py\" afterDir=\"false\" />\r\n    </list>\r\n    <list id=\"d940c511-92f0-4fb1-bee5-601ff7e2efda\" name=\"Changes by danielbier\" comment=\"\" />\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Jupyter Notebook\" />\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$/..\" />\r\n  </component>\r\n  <component name=\"MarkdownSettingsMigration\">\r\n    <option name=\"stateVersion\" value=\"1\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"2GaQfpjOf9rEUTWkdg4KFLWfbUW\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,\r\n    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,\r\n    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;C:/Users/kraus/OneDrive/Uni/Semester 5 - Barcelona/Term 1/AI/P-03/reinforcement&quot;,\r\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RunManager\">\r\n    <configuration default=\"true\" type=\"PythonConfigurationType\" factoryName=\"Python\">\r\n      <module name=\"CV-Bot\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"true\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"main\" type=\"PythonConfigurationType\" factoryName=\"Python\" nameIsGenerated=\"true\">\r\n      <module name=\"CV-Bot\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/main.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"5649b55e-c08f-47c7-b4e3-720abb9a88ae\" name=\"Changes\" comment=\"\" />\r\n      <created>1666624320371</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1666624320371</updated>\r\n      <workItem from=\"1666624324547\" duration=\"3914000\" />\r\n      <workItem from=\"1666707462917\" duration=\"24000\" />\r\n      <workItem from=\"1667220446521\" duration=\"2463000\" />\r\n      <workItem from=\"1668082266353\" duration=\"57000\" />\r\n      <workItem from=\"1668349949463\" duration=\"9077000\" />\r\n      <workItem from=\"1668771685506\" duration=\"47000\" />\r\n      <workItem from=\"1669282439560\" duration=\"10646000\" />\r\n      <workItem from=\"1669300612743\" duration=\"27000\" />\r\n      <workItem from=\"1669389294498\" duration=\"687000\" />\r\n      <workItem from=\"1669464900000\" duration=\"7630000\" />\r\n      <workItem from=\"1669628196853\" duration=\"6406000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"add readme.md\">\r\n      <created>1667490598481</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1667490598481</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"add readme.md\">\r\n      <created>1669470813553</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1669470813553</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"add readme.md\">\r\n      <created>1669470895329</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1669470895329</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"add printing etc\">\r\n      <created>1669478066049</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1669478066049</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"5\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <option name=\"ADD_EXTERNAL_FILES_SILENTLY\" value=\"true\" />\r\n    <MESSAGE value=\"add readme.md\" />\r\n    <MESSAGE value=\"add printing etc\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"add printing etc\" />\r\n  </component>\r\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\r\n    <SUITE FILE_PATH=\"coverage/CV_Bot$main.coverage\" NAME=\"main Coverage Results\" MODIFIED=\"1669645396027\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 1e75cab9266e7d17a166d43d1b53cd0467e66ce2)
++++ b/.idea/workspace.xml	(date 1669647307005)
+@@ -4,10 +4,11 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="5649b55e-c08f-47c7-b4e3-720abb9a88ae" name="Changes" comment="add printing etc">
+-      <change beforePath="$PROJECT_DIR$/.idea/CV-Bot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/CV-Bot.iml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
++    <list default="true" id="5649b55e-c08f-47c7-b4e3-720abb9a88ae" name="Changes" comment="Some stuff">
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialog.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+     </list>
+     <list id="d940c511-92f0-4fb1-bee5-601ff7e2efda" name="Changes by danielbier" comment="" />
+     <option name="SHOW_DIALOG" value="false" />
+@@ -21,6 +22,17 @@
+         <option value="Jupyter Notebook" />
+         <option value="Python Script" />
+       </list>
++    </option>
++  </component>
++  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
++    <envs>
++      <env key="FLASK_APP" value="app" />
++    </envs>
++    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
++    <option name="myEnvs">
++      <map>
++        <entry key="FLASK_APP" value="app" />
++      </map>
+     </option>
+   </component>
+   <component name="Git.Settings">
+@@ -114,6 +126,7 @@
+       <workItem from="1669389294498" duration="687000" />
+       <workItem from="1669464900000" duration="7630000" />
+       <workItem from="1669628196853" duration="6406000" />
++      <workItem from="1669646263684" duration="1037000" />
+     </task>
+     <task id="LOCAL-00001" summary="add readme.md">
+       <created>1667490598481</created>
+@@ -143,7 +156,14 @@
+       <option name="project" value="LOCAL" />
+       <updated>1669478066049</updated>
+     </task>
+-    <option name="localTasksCounter" value="5" />
++    <task id="LOCAL-00005" summary="Some stuff">
++      <created>1669645746115</created>
++      <option name="number" value="00005" />
++      <option name="presentableId" value="LOCAL-00005" />
++      <option name="project" value="LOCAL" />
++      <updated>1669645746115</updated>
++    </task>
++    <option name="localTasksCounter" value="6" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -164,9 +184,10 @@
+     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+     <MESSAGE value="add readme.md" />
+     <MESSAGE value="add printing etc" />
+-    <option name="LAST_COMMIT_MESSAGE" value="add printing etc" />
++    <MESSAGE value="Some stuff" />
++    <option name="LAST_COMMIT_MESSAGE" value="Some stuff" />
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+-    <SUITE FILE_PATH="coverage/CV_Bot$main.coverage" NAME="main Coverage Results" MODIFIED="1669645396027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/CV_Bot$main.coverage" NAME="main Coverage Results" MODIFIED="1669647281416" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+   </component>
+ </project>
+\ No newline at end of file
