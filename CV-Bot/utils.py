@@ -3,25 +3,29 @@ import re
 
 import contextlib
 
-with contextlib.redirect_stdout(None):
+with contextlib.redirect_stdout(None): # Todo check how to do that
     spacy.cli.download("en_core_web_sm")
 nlp = spacy.load('en_core_web_sm')
 
 
-# currently loading spacy during every execution
-
 
 
 # filter for valid inputs by user
-name_re = "([A-Z]|[a-z])[a-z]+ ([A-Z]|[a-z])[a-z]+( ([A-Z]|[a-z])[a-z]+)*"
-date_re = "([0-3]?[0-9].[0-1]?[0-9].[1-2][0-9][0-9][0-9])|([0-3]?[0-9]/[0-1]?[0-9]/[1-2][0-9][0-9][0-9])"
 mail_re = ".+@.+\..+"
 address_re = "[A-Z]+[a-z]+.? [0-9]+"
-educ_re = None
-exper_re = None
-social_re = None
-skills_re = None
-interests_re = None
+# Error codes
+check_data_error = "check_data_not_found"
+no_prev_error = "prev"
+
+question_num = 0
+fun_num = 1
+data_num = 2
+debug_info = True
+debug_text = False
+debug_text_num = 0
+data_store = 1
+threshold = 0.6
+
 
 data = {"Personal Data":
     {
@@ -80,18 +84,39 @@ check_data_questions = ["Can you show me what I entered for X?",
                         "What did I answer in the previous question?"
                         ]
 
-repeat_info_questions = ["Can you please repeat that",
-                         "State the question again",
-                         "Can you repeat the question?"
+repeat_info_questions = ["Can you please repeat that.",
+                         "State the question again.",
+                         "Can you repeat the question?",
+                         "I didn't catch that."
+                         "I want to hear it once more."
+                         "Show it once more."
                          ]
 
 stop_statements = ["I want to stop",
                    "I am finished",
                    "Stop the dialog",
                    "Goodbye",
-                   "Bye"
+                   "Bye",
+                   "It is over"
                    ]
 
+check_prev = ["last", "previous", "before"]
+check_stage = ["stage", "phase", "section"]
+check_again = ["again", "more"]
+check_all = ["all", "every", "full"]
+
+data_keys = {
+    "Personal Data": ["Personal", "Personal", "About me"],
+    "Name": ["Name", "called"],
+    "Birthdate": ["Date", "Birth", "Born"],
+    "E-Mail": ["Mail"],
+    "Address": ["Address", "Residence", "Home", "live"],
+    "Education": ["Education", "School", "University"],
+    "Skills": ["Skill", "Action", "Capabilities"],
+    "Social Engagement": ["Social", "Engagement"],
+    "Experience": ["Experience"],
+    "Interests": ["Interests"]
+}
 
 def input_possible_values(lst):
     values = list(data_keys.values())
@@ -105,22 +130,7 @@ def input_possible_values(lst):
     return result_list
 
 
-check_prev = ["last", "previous", "before"]
-check_stage = ["stage", "phase", "section"]
-check_again = ["again", "more"]
-check_all = ["all", "every", "full"]
-data_keys = {
-    "Personal Data": ["Personal", "Personal", "About me"],
-    "Name": ["Name"],
-    "Birthdate": ["Date"],
-    "E-Mail": ["Mail"],
-    "Address": ["Adress"],
-    "Education": ["Education", "School", "University"],
-    "Skills": ["Skill", "Action"],
-    "Social Engagement": ["Social", "Engagement"],
-    "Experience": ["Experience"],
-    "Interests": ["Interests"]
-}
+
 
 # Error codes
 check_data_error = "check_data_not_found"
