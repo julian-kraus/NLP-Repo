@@ -1,3 +1,6 @@
+from datetime import datetime
+from itertools import permutations
+
 from utils import *
 import numpy as np
 from numpy.linalg import norm
@@ -126,6 +129,11 @@ class Dialog:
 
                 self.print_debug("Processed input: " + str(processed_input))
 
+                while(processed_input == 'not valid'):
+                    print('Sorry the entered input for ' + self.get_current_question_name() + ' was not valid. Please enter again. ')
+                    processed_input = self.understand(self.ask(question, None))
+                    self.print_debug("Processed input: " + str(processed_input))
+
                 # store data
                 current_question = self.get_current_question_data()
                 data_dict = current_question[data_store]
@@ -161,7 +169,7 @@ class Dialog:
     def understand(self, user_input):
         type, data = self.classify(user_input)
 
-        self.print_debug("Classified input type:" + type)
+        self.print_debug("Classified input type: " + type)
 
         if type == "check_data":
             self.print_data(data)
@@ -247,12 +255,12 @@ class Dialog:
                 test = re.search(address_re, input).group()
                 return [("Address", re.search(address_re, input).group())]
             except AttributeError:
-                return None
+                return 'not valid'
         elif self.get_current_question_name() == "E-Mail":
             try:
                 return [("E-Mail", re.search(mail_re, input).group())]
             except AttributeError:
-                return None
+                return 'not valid'
 
         # check if we are only looking for regex and not the SpaCy model
         current_question = self.get_current_question_data()
@@ -283,11 +291,20 @@ class Dialog:
                 while True:
                     question_missing_info = 'The following information seems to be missing: ' + str(
                         key[0]) + ' Please enter the information: \n'
-                    processed_input = self.understand(self.ask(question, question_missing_info))
+                    if key[0] is 'DATE' and (self.get_current_stage_name() is 'Education' or self.get_current_stage_name() is 'Experience'):
+                        print('Currently missing is your ' + key[2] + 'date.')
+                        processed_input = self.understand(self.ask(question, question_missing_info))
+                    else: processed_input = self.understand(self.ask(question, question_missing_info))
+
                     if len(processed_input) != 0:
                         data_dict[key] = processed_input[0][1]
                         break;
 
+        print('sort values')
+        print(data_dict)
+        # sort data in the correct order
+
+        print(data_dict)
     def sev_bullet_points(self, question):
         counter = 0
         position = self.get_current_stage_name()

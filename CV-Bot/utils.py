@@ -38,16 +38,16 @@ data = {"Personal Data":
         {
             "1": ["Please state an education step containing the teaching institution, a start date "
                   "and a end date.",
-                  {("DATE", "CARDINAL", '1'): None,
-                   ("DATE", "CARDINAL", '2'): None,
+                  {("DATE", "CARDINAL", 'Start'): None,
+                   ("DATE", "CARDINAL", 'End'): None,
                    ("ORG", ""): None}]
         },
     "Experience":
         {
             "1": ["Please state an step of your working experience containing the company, a start date "
                   "and a end date.",
-                  {("DATE", "CARDINAL", '1'): None,
-                   ("DATE", "CARDINAL", '2'): None,
+                  {("DATE", "CARDINAL", 'Start'): None,
+                   ("DATE", "CARDINAL", 'End'): None,
                    ("ORG", ""): None}]
         },
     "Social Engagement":
