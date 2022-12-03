@@ -12,6 +12,29 @@ Current features:
 
 #### Goal:
 
+!!!! Check if date checking is important (32.12.2001)
+!!!! First check if it contains answer?
+!!!! Get email fails with @ or @gmail.com
+!!!! Doesn't recognize 05/11/2001
+!!!! Make adress question more detailed, only street and number
+!!!! Typo in education -> a end date => an end date
+!!!! Typo in Educationstep (another step) => also a comma after it
+!!!! Add to check question Can you repeat my X?
+!!!! What is my adress again?  
+Sorry unfortunately we couldn't find the data you were looking for.
+Do you want to continue or try again?
+What is my address again? 
+Please state your request again. 
+What is my address again?
+=> Leads to an error
+!!! Doesn't find anything to print -> say something?
+!!! Only recognizes two name
+!!! Which day was i born? for check data
+!!! What to do about 2000/2000 as birthdate
+Show me everything/Show me all -> leads error
+
+
+
 The goal is to create, based on the information the user has given with the input fields, to create a CV containing all 
 necessary personal information. Therefore, the CV has a defined structure which can be viewed in the utils.py File.
 Part of the project is using trained pipelines/models

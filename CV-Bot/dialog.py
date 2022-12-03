@@ -206,6 +206,7 @@ class Dialog:
     def similarity(self, elem_vec, ls_vec):
         # Computes the max cosine similarity of the elem_vec to one of the ls_vecs
         max_sim = 0.0
+        max_sim_lst = [(np.dot(elem_vec, vec) / (norm(elem_vec) * norm(vec)), vec) for vec in ls_vec]
         for vec in ls_vec:
             new_sim = np.dot(elem_vec, vec) / (norm(elem_vec) * norm(vec))
             if new_sim > max_sim:

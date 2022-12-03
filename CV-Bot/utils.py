@@ -20,11 +20,11 @@ no_prev_error = "prev"
 question_num = 0
 fun_num = 1
 data_num = 2
-debug_info = True
+debug_info = False
 debug_text = False
 debug_text_num = 0
 data_store = 1
-threshold = 0.6
+threshold = 0.7
 
 
 data = {"Personal Data":
@@ -79,7 +79,8 @@ check_data_questions = ["Can you show me what I entered for X?",
                         "What did you put as X?", "Show me my X.",
                         "What are my X?",
                         "Tell me about X."
-                        "Show me the last questions stage."
+                        "Show me the last questions stage.",
+                        "What did you put in last?"
                         "What was saved in the X?",
                         "What did I answer in the previous question?"
                         ]
@@ -139,8 +140,7 @@ no_prev_error = "prev"
 question_num = 0
 fun_num = 1
 data_num = 2
-debug_info = True
-debug_text = False
+
 debug_text_num = 0
 data_store = 1
 threshold = 0.6
