@@ -346,7 +346,7 @@ class Dialog:
                                                                           'format as already done. Otherwise press ' \
                                                                           'Enter \n '
                 if debug_text:
-                    inp = debug_text_data[debug_text_key].pop()
+                    inp = debug_text_data[debug_text_key].pop(0)
                 else:
                     inp = self.request(q)
 
@@ -368,7 +368,7 @@ class Dialog:
                     data_dict = current_question[data_store]
 
                     self.print_debug(
-                        self.get_current_question_name() + "\n" + str(data_dict) + "\n" + current_question + "\n" + str(
+                        self.get_current_question_name() + "\n" + str(data_dict) + "\n" + str(current_question) + "\n" + str(
                             self.get_current_question_data()))
 
                     self.map_data(data_dict, processed_input, question)

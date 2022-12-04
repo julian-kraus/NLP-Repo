@@ -22,11 +22,15 @@ no_prev_error = "prev"
 question_num = 0
 fun_num = 1
 data_num = 2
-debug_info = True
+debug_info = False
 debug_text = True
 debug_text_key = "Standard"
 data_store = 1
 threshold = 0.7
+# Error codes
+
+
+
 
 
 data = {"Personal Data":
@@ -136,23 +140,14 @@ def input_possible_values(lst):
 
 
 
-# Error codes
-check_data_error = "check_data_not_found"
-no_prev_error = "prev"
 
-question_num = 0
-fun_num = 1
-data_num = 2
-
-debug_text_key = "Standard"
-data_store = 1
 
 
 debug_text_data = {
     "Standard": [
         # Personal Information
         "Hey, my name is Max Mustermann.",
-        "Of course. It is the 5.11.2001.",
+        "Of course. It is the 5.11.2001",
         "max@mustermann.com",
         "My address is Baumstr. 123.",
         # Education
@@ -160,17 +155,18 @@ debug_text_data = {
         "From 2020 to 2021 I went to the University Pompeu Fabra in Spain.",
         "",
         # Work Experience
-        "From 2000 to 2005 I worked at Google in Germany.",
-        "I worked at Amazon from 2005 to 2006.",
-        "I worked at Microsoft from 2006 to 2009.",
+        "From 05.11.2000 to 05.11.2005 I worked at Google in Germany.",
+        "I worked at Amazon from 05.11.2005 to 05.11.2006.",
+        "I worked at Microsoft from 05.11.2006 to 05.11.2009.",
         "",
         # Social Engagement
-        "Oxfam International 2006 2009",
+        "Oxfam International 05.11.2006 - 05.11.2009",
         "",
         # Skills
         "Most stuff I programmed was in Java and Python. So I would say my main skills lay in that area.",
         # Interests
         "Hmmm, I'd say languages and food in general",
+        "Goodbye"
     ],
     "Check_Repetition": [
         # Personal Information
@@ -244,54 +240,6 @@ debug_text_data = {
     ]
 
 }
-Hello = [
-]
 
-Birthdate = [
-]
-
-Mail = [
-]
-
-Adress = [
-]
-
-Education1 = [
-]
-
-Education2 = [
-]
-
-Work_Experience1 = [
-]
-
-Work_Experience2 = [
-]
-
-Work_Experience3 = [
-]
-
-Work_Experience4 = [
-]
-
-Social_Engagement = [
-]
-
-Skills = [
-]
-
-
-Interests = [
-]
-
-Goodbye = [
-]
-
-Check = [
-]
-
-Repeat = [
-    ""
-]
 
 
