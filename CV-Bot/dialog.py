@@ -292,6 +292,7 @@ class Dialog:
         for key, value in data_dict.items():
             question_missing_info = 'The following information seems to be missing: ' + str(
                 key[0]) + ' Please enter the information: \n'
+
             self.bring_date_to_format(data_dict, key, value, question, question_missing_info)
             # value missing?
             if value == None:
@@ -305,10 +306,13 @@ class Dialog:
                         processed_input = self.understand(self.ask(question, question_missing_info))
 
                     if len(processed_input) != 0:
-                        self.bring_date_to_format(data_dict, key, value, question, question_missing_info)
+                        self.bring_date_to_format(data_dict, key, processed_input, question, question_missing_info)
                         break;
 
-    def bring_date_to_format(self, data_dict, key, value, question, question_missing_info):
+    def bring_date_to_format(self, data_dict, key, processed_input, question, question_missing_info):
+        if type(processed_input) == list:
+            value = processed_input[0][1]
+        else:value = processed_input
         if value is not None and key[0] is 'DATE':
             if not self.check_valid_date(value):
                 date = False
