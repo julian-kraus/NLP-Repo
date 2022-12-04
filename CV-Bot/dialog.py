@@ -155,7 +155,7 @@ class Dialog:
         current_question = self.get_current_question_data()
         if debug_text:
             self.say(current_question[question_num])
-            answer = debug_text_data[debug_text_num].pop(0)
+            answer = debug_text_data[debug_text_key].pop(0)
             print(answer)
         else:
             if data_missing is not None:
@@ -346,7 +346,7 @@ class Dialog:
                                                                           'format as already done. Otherwise press ' \
                                                                           'Enter \n '
                 if debug_text:
-                    inp = debug_text_data[debug_text_num].pop()
+                    inp = debug_text_data[debug_text_key].pop()
                 else:
                     inp = self.request(q)
 
