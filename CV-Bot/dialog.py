@@ -125,12 +125,13 @@ class Dialog:
             for question in list(current_stage):
                 # get processed input by user
                 self.add_question_to_history(question)
+
                 processed_input = self.understand(self.ask(question, None))
 
                 self.print_debug("Processed input: " + str(processed_input))
 
                 while (processed_input == 'not valid'):
-                    print(
+                    self.say(
                         'Sorry the entered input for ' + self.get_current_question_name() + ' was not valid. Please enter again. ')
                     processed_input = self.understand(self.ask(question, None))
                     self.print_debug("Processed input: " + str(processed_input))
@@ -140,8 +141,6 @@ class Dialog:
                 data_dict = current_question[data_store]
 
                 self.map_data(data_dict, processed_input, question)
-
-                print(data)
 
                 # education and working experience
                 self.sev_bullet_points(question)
@@ -156,7 +155,6 @@ class Dialog:
         if debug_text:
             self.say(current_question[question_num])
             answer = debug_text_data[debug_text_key].pop(0)
-            print(answer)
         else:
             if data_missing is not None:
                 answer = self.request(str(data_missing) + ' - question: ' + current_question[question_num] + "\n")
@@ -164,7 +162,6 @@ class Dialog:
                 answer = self.request(current_question[question_num] + "\n")
 
         self.print_debug("Received answer: " + answer)
-
         if answer == "":
             self.say("Sorry I didn't quite catch that.")
             return self.ask(question, data_missing)
@@ -172,9 +169,7 @@ class Dialog:
 
     def understand(self, user_input):
         type, data = self.classify(user_input)
-
         self.print_debug("Classified input type: " + type)
-
         if type == "check_data":
             self.print_data(data)
             return self.understand(self.ask(self.get_current_question_name(), None))
@@ -300,7 +295,6 @@ class Dialog:
                 while True:
                     if key[0] is 'DATE' and (
                             self.get_current_stage_name() is 'Education' or self.get_current_stage_name() is 'Experience'):
-                        print('Currently missing is your ' + key[2] + 'date.')
                         processed_input = self.understand(self.ask(question, question_missing_info))
                     else:
                         processed_input = self.understand(self.ask(question, question_missing_info))
@@ -340,11 +334,11 @@ class Dialog:
     def sev_bullet_points(self, question):
         counter = 0
         position = self.get_current_stage_name()
-        if position == 'Education' or position == 'Experience':
+        q = 'If you would like to add another ' + str(position) + 'step enter the information in the same ' \
+                                                                  'format as already done. Otherwise press ' \
+                                                                  'Enter \n '
+        if position == 'Education' or position == 'Experience' or position == 'Skills':
             while True:
-                q = 'If you would like to add another ' + str(position) + 'step enter the information in the same ' \
-                                                                          'format as already done. Otherwise press ' \
-                                                                          'Enter \n '
                 if debug_text:
                     inp = debug_text_data[debug_text_key].pop(0)
                 else:
@@ -359,7 +353,10 @@ class Dialog:
                     # create new dictionary element
 
                     stage = self.get_current_stage_data()
-                    stage[(str(counter + 2))] = [q,
+                    if position == 'Skills':
+                        stage[(str(counter + 2))] = [q,
+                                                     {("GPE", 'PERSON'): None,}]
+                    else: stage[(str(counter + 2))] = [q,
                                                  {("DATE", "CARDINAL", '1'): None,
                                                   ("DATE", "CARDINAL", '2'): None,
                                                   ("ORG", ""): None}]

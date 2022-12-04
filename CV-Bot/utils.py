@@ -23,7 +23,7 @@ question_num = 0
 fun_num = 1
 data_num = 2
 debug_info = False
-debug_text = True
+debug_text = False
 debug_text_key = "Standard"
 data_store = 1
 threshold = 0.7
@@ -33,7 +33,8 @@ threshold = 0.7
 
 
 
-data = {"Personal Data":
+data = {
+    "Personal Data":
     {
         "Name": ["What is your full name?", {("PERSON", ""): None}],
         "Birthdate": ["What is your date of birth?", {("DATE", "CARDINAL"): None}],
@@ -66,10 +67,8 @@ data = {"Personal Data":
         },
     "Skills":
         {
-            "Skills": ["Please state skills you would liked mentioned in your CV.",
-                       {("DATE", "CARDINAL"): None,
-                        ("DATE", "CARDINAL"): None,
-                        ("ORG", ""): None}]
+            "1": ["Please state a skill that you would like mentioned in your CV.",
+                       {("GPE", "PERSON"): None}]
         },
     "Interests":
         {
@@ -138,11 +137,6 @@ def input_possible_values(lst):
     return result_list
 
 
-
-
-
-
-
 debug_text_data = {
     "Standard": [
         # Personal Information
@@ -163,7 +157,8 @@ debug_text_data = {
         "Oxfam International 05.11.2006 - 05.11.2009",
         "",
         # Skills
-        "Most stuff I programmed was in Java and Python. So I would say my main skills lay in that area.",
+        "Programming in Java is one of my biggest skills.",
+        ""
         # Interests
         "Hmmm, I'd say languages and food in general",
         "Goodbye"
