@@ -129,8 +129,9 @@ class Dialog:
 
                 self.print_debug("Processed input: " + str(processed_input))
 
-                while(processed_input == 'not valid'):
-                    print('Sorry the entered input for ' + self.get_current_question_name() + ' was not valid. Please enter again. ')
+                while (processed_input == 'not valid'):
+                    print(
+                        'Sorry the entered input for ' + self.get_current_question_name() + ' was not valid. Please enter again. ')
                     processed_input = self.understand(self.ask(question, None))
                     self.print_debug("Processed input: " + str(processed_input))
 
@@ -140,12 +141,15 @@ class Dialog:
 
                 self.map_data(data_dict, processed_input, question)
 
+                print(data)
+
                 # education and working experience
                 self.sev_bullet_points(question)
 
         self.goodbye()
 
         # ask according to the current position
+
     def ask(self, question, data_missing):
         # get the answer from the user or from the debug data
         current_question = self.get_current_question_data()
@@ -286,26 +290,49 @@ class Dialog:
                     break
         # check if all necessary information are given
         for key, value in data_dict.items():
+            question_missing_info = 'The following information seems to be missing: ' + str(
+                key[0]) + ' Please enter the information: \n'
+            self.bring_date_to_format(data_dict, key, value, question, question_missing_info)
             # value missing?
             if value == None:
                 # until we have fitting input keep asking
                 while True:
-                    question_missing_info = 'The following information seems to be missing: ' + str(
-                        key[0]) + ' Please enter the information: \n'
-                    if key[0] is 'DATE' and (self.get_current_stage_name() is 'Education' or self.get_current_stage_name() is 'Experience'):
+                    if key[0] is 'DATE' and (
+                            self.get_current_stage_name() is 'Education' or self.get_current_stage_name() is 'Experience'):
                         print('Currently missing is your ' + key[2] + 'date.')
                         processed_input = self.understand(self.ask(question, question_missing_info))
-                    else: processed_input = self.understand(self.ask(question, question_missing_info))
+                    else:
+                        processed_input = self.understand(self.ask(question, question_missing_info))
 
                     if len(processed_input) != 0:
-                        data_dict[key] = processed_input[0][1]
+                        self.bring_date_to_format(data_dict, key, value, question, question_missing_info)
                         break;
 
-        print('sort values')
-        print(data_dict)
-        # sort data in the correct order
+    def bring_date_to_format(self, data_dict, key, value, question, question_missing_info):
+        if value is not None and key[0] is 'DATE':
+            if not self.check_valid_date(value):
+                date = False
+                while date == False:
+                    print('Unfortunately the format you entered your Date in seemed to be not correct. Please try '
+                          'again.')
+                    print('Currently not correct is your ' + key[2] + 'date.')
+                    processed_input = self.understand(self.ask(question, question_missing_info))
+                    if len(processed_input) != 0:
+                        date = self.check_valid_date(processed_input[0][1])
+                        data_dict[key] = date.strftime('%d/%m/%Y')
+            else:
+                data_dict[key] = self.check_valid_date(value).strftime('%d/%m/%Y')
 
-        print(data_dict)
+    # code from https://code.activestate.com/recipes/578245-flexible-datetime-parsing/
+    def check_valid_date(self, string):
+        "Parse a string into a datetime object."
+        for fmt in date_formats:
+            try:
+                return datetime.strptime(string, fmt)
+            except ValueError:
+                pass
+        return False
+
     def sev_bullet_points(self, question):
         counter = 0
         position = self.get_current_stage_name()

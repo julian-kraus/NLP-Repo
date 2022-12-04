@@ -13,6 +13,8 @@ nlp = spacy.load('en_core_web_sm')
 # filter for valid inputs by user
 mail_re = ".+@.+\..+"
 address_re = "[A-Z]+[a-z]+.? [0-9]+"
+date_formats = ['%Y-%m-%d', '%Y', '%Y.%m.%d', '%d.%m.%Y', '%d-%m-%Y']
+
 # Error codes
 check_data_error = "check_data_not_found"
 no_prev_error = "prev"
