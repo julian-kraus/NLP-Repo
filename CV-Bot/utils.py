@@ -208,7 +208,7 @@ data_keys = {
 # filter for valid inputs by user other than spacy
 mail_re = ".+@.+\..+"
 address_re = "[A-Z]+[a-z]+.? [0-9]+"
-date_formats = ['%Y-%m-%d', '%Y', '%Y.%m.%d', '%d.%m.%Y', '%d-%m-%Y']
+date_formats = ['%Y-%m-%d', '%Y', '%Y.%m.%d', '%d.%m.%Y', '%d-%m-%Y', '%d/%m/%Y', '%Y/%m/%d']
 
 
 # Useful for getting data out of the data structure

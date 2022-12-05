@@ -125,8 +125,8 @@ class Dialog:
             for question in list(current_stage):
                 # get processed input by user
                 self.add_question_to_history(question)
-
-                processed_input = self.understand(self.ask(question, None))
+                input = self.ask(question, None)
+                processed_input = self.understand(input)
 
                 self.print_debug("Processed input: " + str(processed_input))
 
@@ -272,14 +272,33 @@ class Dialog:
         current_question = self.get_current_question_data()
         necessary_entities = [element for innerList in current_question[fun_num].keys() for element in
                               innerList]
+
+        # get all correct dates and sort them correctly
+        if 'DATE' in necessary_entities:
+            dates = []
+            words = re.split(' ', input)
+            for word in words:
+                # remove dot if is the last word
+                if word.endswith('.'):
+                    word = word[:-1]
+                date = self.check_valid_date(word)
+                if date != False:
+                    date = date.strftime("%d/%m/%Y")
+                    dates.append(date)
+            dates.sort()
+
+            counter = 0
+            for entity in necessary_entities:
+                if entity == 'DATE' and counter < len(dates):
+                    user_data.append(tuple((entity, dates[counter])))
+                    counter += 1
+
         doc = nlp(input)
         for entity in doc.ents:
             for type in necessary_entities:
-                if entity.label_ == type:
+                if entity.label_ == type and type != 'DATE':
                     user_data.append(tuple((type, entity.text)))
 
-        # when filtering dates remove possibly created duplicates
-        user_data = list(set([i for i in user_data]))
         return user_data
 
     def map_data(self, data_dict, processed_input, question):
@@ -289,43 +308,36 @@ class Dialog:
                     data_dict[key] = inp[1]
                     processed_input.remove(inp)
                     break
+
+        sort_necessary = False
         # check if all necessary information are given
         for key, value in data_dict.items():
             question_missing_info = 'The following information seems to be missing: ' + str(
                 key[0]) + ' Please enter the information: \n'
 
-            self.bring_date_to_format(data_dict, key, value, question, question_missing_info)
             # value missing?
             if value == None:
                 # until we have fitting input keep asking
                 while True:
-                    if key[0] is 'DATE' and (
-                            self.get_current_stage_name() is 'Education' or self.get_current_stage_name() is 'Experience'):
-                        processed_input = self.understand(self.ask(question, question_missing_info))
-                    else:
-                        processed_input = self.understand(self.ask(question, question_missing_info))
-
-                    if len(processed_input) != 0:
-                        self.bring_date_to_format(data_dict, key, processed_input, question, question_missing_info)
-                        break;
-
-    def bring_date_to_format(self, data_dict, key, processed_input, question, question_missing_info):
-        if type(processed_input) == list:
-            value = processed_input[0][1]
-        else:value = processed_input
-        if value is not None and key[0] is 'DATE':
-            if not self.check_valid_date(value):
-                date = False
-                while date == False:
-                    print('Unfortunately the format you entered your Date in seemed to be not correct. Please try '
-                          'again.')
-                    print('Currently not correct is your ' + key[2] + 'date.')
                     processed_input = self.understand(self.ask(question, question_missing_info))
                     if len(processed_input) != 0:
-                        date = self.check_valid_date(processed_input[0][1])
-                        data_dict[key] = date.strftime('%d/%m/%Y')
-            else:
-                data_dict[key] = self.check_valid_date(value).strftime('%d/%m/%Y')
+                        break;
+                data_dict[key] = processed_input[0][1]
+
+            if 'DATE' in key:
+                sort_necessary = True
+
+        if sort_necessary:
+            dates = []
+            for key, value in data_dict.items():
+                if 'DATE' in key:
+                    dates.append(value)
+            dates.sort()
+            counter = 0
+            for key, value in data_dict.items():
+                if 'DATE' in key:
+                    data_dict[key] = dates[counter]
+                    counter += 1
 
     # code from https://code.activestate.com/recipes/578245-flexible-datetime-parsing/
     def check_valid_date(self, string):
@@ -364,8 +376,8 @@ class Dialog:
                         stage[(str(counter + 2))] = [q,
                                                      {("GPE", 'PERSON'): None,}]
                     else: stage[(str(counter + 2))] = [q,
-                                                 {("DATE", "CARDINAL", '1'): None,
-                                                  ("DATE", "CARDINAL", '2'): None,
+                                                 {("DATE", '1'): None,
+                                                  ("DATE", '2'): None,
                                                   ("ORG", ""): None}]
                     self.add_question_to_history((str(counter + 2)))
                     current_question = self.get_current_question_data()
