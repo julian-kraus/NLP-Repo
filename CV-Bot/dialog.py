@@ -16,9 +16,8 @@ class Dialog:
         self.check_data_vec = self.compute_vec_list(input_possible_values(check_data_questions))
         self.repeat_question_vec = self.compute_vec_list(repeat_info_questions)
         self.goodbye_question_vec = self.compute_vec_list(stop_statements)
-        os.system('clear')
-        os.system('cls')
         self.say("Hello, I am CV-Bot. I am here to help you create your CV.")
+        self.inBullets = False
         self.converse()
 
     """ Used for interaction with the user"""
@@ -145,6 +144,8 @@ class Dialog:
                 # education and working experience
                 self.sev_bullet_points(question)
 
+                self.inBullets = False
+
         self.goodbye()
 
     def ask(self, question, data_missing):
@@ -162,21 +163,31 @@ class Dialog:
 
         self.print_debug("Received answer: " + answer)
         if answer == "":
+            #if self.inBullets:
+            #    return ""
             self.say("Sorry I didn't quite catch that.")
             return self.ask(question, data_missing)
         return answer
 
     def understand(self, user_input):
+        #if user_input == "":
+        #    return ""
         type, data = self.classify(user_input)
         self.print_debug("Classified input type: " + type)
         if type == "check_data":
             text = self.get_data_as_string(data)
             if text == "":
                 self.say("Sorry I didn't find any data to show you. I will continue with the CV.")
+            else:
+                print(text)
+            if self.inBullets:
+                return None
             return self.understand(self.ask(self.get_current_question_name(), None))
         elif type == "goodbye":
             self.goodbye()
         elif type == "repeat":
+            if self.inBullets:
+                return None
             self.say("Sure, no problem.")
             return self.understand(self.ask(self.get_current_question_name(), None))
         else:
@@ -356,18 +367,23 @@ class Dialog:
                                                                   'format as already done. Otherwise press ' \
                                                                   'Enter \n '
         if position == 'Education' or position == 'Experience' or position == 'Skills':
+            self.inBullets = True
             while True:
                 if debug_text:
                     inp = debug_text_data[debug_text_key].pop(0)
                     print(inp)
                 else:
-                    inp = self.request(q)
+                    self.add_question_to_history(q)
+                    inp = self.ask(q)
 
                 if inp == "":
                     break
                 else:
                     # process the given input
                     processed_input = self.understand(inp)
+
+                    if processed_input is None:
+                        continue
 
                     # create new dictionary element
 

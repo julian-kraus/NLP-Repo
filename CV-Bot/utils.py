@@ -4,9 +4,9 @@ nlp = spacy.load('en_core_web_sm')
 
 
 # To use for debugging
-debug_info = True
-debug_text = False
-debug_text_key = "Standard" # Can be Standard or Mixed
+debug_info = False
+debug_text = True
+debug_text_key = "Check_Repetition" # Can be Standard or Mixed
  # Todo remove unused dialogs !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 debug_text_data = {
     "Standard": [
@@ -29,10 +29,8 @@ debug_text_data = {
         "",
         # Skills
         "Programming in Java is one of my biggest skills.",
+        "I also like programming in Python",
         ""
-        # Interests
-        "Hmmm, I'd say languages and food in general",
-        "Goodbye"
     ],
     "Check_Repetition": [
         # Personal Information
@@ -54,10 +52,10 @@ debug_text_data = {
         # Social Engagement
         "From 2006 until 2009 I helped out at Oxfam International.",
         # Skills
-        "Python Java",
-        "Show me where I live.",
-        # Interests
-        "My main interests are languages and to cook.",
+        "Programming in Java is one of my biggest skills.",
+        "I also like programming in Python",
+        "Show me my address.",
+        "",
         "Goodbye"
     ],
     "False_Inputs":[
@@ -104,8 +102,6 @@ debug_text_data = {
         # Skills
         "My main expertise is with Python and Java.",
         "I didn't catch that. Can you repeat it please?",
-        # Interests
-        "I love learning new languages and I am also a great cook.",
     ]
 
 }
@@ -122,37 +118,30 @@ data = {
         {
             "1": ["Please state an education step containing the teaching institution, a start date "
                   "and an end date.",
-                  {("DATE", "CARDINAL", 'Start'): None,
-                   ("DATE", "CARDINAL", 'End'): None,
+                  {("DATE", 'Start'): None,
+                   ("DATE", 'End'): None,
                    ("ORG", ""): None}]
         },
     "Experience":
         {
             "1": ["Please state a step of your working experience containing the company, a start date "
                   "and an end date.",
-                  {("DATE", "CARDINAL", 'Start'): None,
-                   ("DATE", "CARDINAL", 'End'): None,
+                  {("DATE", 'Start'): None,
+                   ("DATE", 'End'): None,
                    ("ORG", ""): None}]
         },
     "Social Engagement":
         {
             "1": ["Please state a social engagement step containing the institution, a start date "
                   "and an end date.",
-                  {("DATE", "CARDINAL", '1'): None,
-                   ("DATE", "CARDINAL", '2'): None,
+                  {("DATE", 'Start'): None,
+                   ("DATE", 'End'): None,
                    ("ORG", ""): None}]
         },
     "Skills":
         {
             "1": ["Please state a skill that you would like mentioned in your CV.",
                        {("GPE", "PERSON"): None}]
-        },
-    "Interests":
-        {
-            "Interests": ["If you would like to state any personal interests in your CV please enter them here: ",
-                          {("DATE", "CARDINAL"): None,
-                           ("DATE", "CARDINAL"): None,
-                           ("ORG", ""): None}]
         }
 }
 
