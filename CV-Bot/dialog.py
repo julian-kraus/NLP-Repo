@@ -366,7 +366,7 @@ class Dialog:
         return False
 
     def sev_bullet_points(self, question):
-        counter = 0
+        counter = 2
         position = self.get_current_stage_name()
         q = 'If you would like to add another ' + str(position) + ' step enter the information in the same ' \
                                                                   'format as already done. Otherwise press ' \
@@ -395,16 +395,16 @@ class Dialog:
 
                     stage = self.get_current_stage_data()
                     if position == 'Skills':
-                        stage[(str(counter + 2))] = [q,
+                        stage[(str(counter))] = [q,
                                                      {("GPE", 'PERSON'): None,}]
-                    else: stage[(str(counter + 2))] = [q,
+                    else: stage[(str(counter))] = [q,
                                                  {("DATE", '1'): None,
                                                   ("DATE", '2'): None,
                                                   ("ORG", ""): None}]
-                    self.add_question_to_history((str(counter + 2)))
+                    self.add_question_to_history((str(counter)))
                     current_question = self.get_current_question_data()
                     data_dict = current_question[data_store]
-
+                    counter += 1
                     self.print_debug(
                         self.get_current_question_name() + "\n" + str(data_dict) + "\n" + str(current_question) + "\n" + str(
                             self.get_current_question_data()))

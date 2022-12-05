@@ -91,10 +91,10 @@ debug_text_data = {
         "",
         # Work experience
         "I worked at Google from 2000 to 2005.",
-        "2005 - 2006 Siemens",
+        "From 2005 until 2006 Siemens",
         "Show me my Personal Data.",
         "From 2006 to 2009 I worked at Microsoft in Spain.",
-        "2010 - 2012 Siemens",
+        "Fromm 2010 until 2012 Siemens",
         "",
         # Social Engagement
         "I worked at Oxfam International from 2006 to 2009 to help end poverty.",
