@@ -275,6 +275,7 @@ class Dialog:
                 return 'not valid'
         elif self.get_current_question_name() == "E-Mail":
             try:
+                test = re.search(mail_re, input).group()
                 return [("E-Mail", re.search(mail_re, input).group())]
             except AttributeError:
                 return 'not valid'
