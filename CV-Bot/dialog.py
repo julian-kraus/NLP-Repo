@@ -25,12 +25,12 @@ class Dialog:
     def say(self, text):
         format_ = '\033[33;1m'
         end = '\033[0m'
-        print(format_ + text + end)
+        print("Bot: " + format_ + text + end)
 
     def request(self, text):
         format_ = '\033[33;1m'
         end = '\033[0m'
-        return input(format_ + text + end)
+        return input("Bot: " + format_ + text + end)
 
     """ --------------------------------------- """
 
@@ -157,7 +157,7 @@ class Dialog:
             else:
                 self.say(current_question[question_num])
             answer = debug_text_data[debug_text_key].pop(0)
-            print(answer)
+            print("Debug User: " + answer)
         else:
             if data_missing is not None:
                 answer = self.request(str(data_missing) + ' - question: ' + current_question[question_num])
@@ -377,7 +377,7 @@ class Dialog:
                 if debug_text:
                     inp = debug_text_data[debug_text_key].pop(0)
                     self.say(q)
-                    print(inp)
+                    print("Debug User: " + inp)
                 else:
                     self.add_question_to_history(q)
                     inp = self.ask(q, None)

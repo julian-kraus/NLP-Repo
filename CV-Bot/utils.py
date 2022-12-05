@@ -6,8 +6,7 @@ nlp = spacy.load('en_core_web_sm')
 # To use for debugging
 debug_info = False
 debug_text = True
-debug_text_key = "Mixed" # Can be Standard or Mixed
- # Todo remove unused dialogs !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+debug_text_key = "Mixed" # Possible: Standard, Check_Repetition, False_Inputs, Mixed
 debug_text_data = {
     "Standard": [
         # Personal Information
@@ -20,12 +19,12 @@ debug_text_data = {
         "From 05.11.2020 to 05.11.2021 I went to the University Pompeu Fabra in Spain.",
         "",
         # Work Experience
-        "From 05.11.2000 to xyz 01.01.2008 I worked at Google in Germany.",
+        "From 05.11.2000 to 01.01.2008 I worked at Google in Germany.",
         "I worked at Siemens from 05.11.2005 until 05.11.2006",
         "I worked at Microsoft from 05.11.2006 until 05.11.2010",
         "",
         # Social Engagement
-        "Oxfam International 05.11.2006 until 05.11.2010",
+        "Oxfam International from 05.11.2006 until 05.11.2010",
         "",
         # Skills
         "Programming in Java is one of my biggest skills.",
