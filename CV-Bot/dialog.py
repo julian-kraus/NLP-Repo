@@ -155,6 +155,7 @@ class Dialog:
         if debug_text:
             self.say(current_question[question_num])
             answer = debug_text_data[debug_text_key].pop(0)
+            print(answer)
         else:
             if data_missing is not None:
                 answer = self.request(str(data_missing) + ' - question: ' + current_question[question_num] + "\n")
@@ -341,6 +342,7 @@ class Dialog:
             while True:
                 if debug_text:
                     inp = debug_text_data[debug_text_key].pop(0)
+                    print(inp)
                 else:
                     inp = self.request(q)
 

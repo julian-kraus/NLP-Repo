@@ -23,7 +23,7 @@ question_num = 0
 fun_num = 1
 data_num = 2
 debug_info = False
-debug_text = False
+debug_text = True
 debug_text_key = "Standard"
 data_store = 1
 threshold = 0.7
@@ -145,16 +145,16 @@ debug_text_data = {
         "max@mustermann.com",
         "My address is Baumstr. 123.",
         # Education
-        "Oh yeah, sure. I was in Louise Schroeder School until 2019. I think I started in 2010.",
-        "From 2020 to 2021 I went to the University Pompeu Fabra in Spain.",
+        "Oh yeah, sure. I was in Louise Schroeder School until 05.11.2019. I think I started in 05.11.2010.",
+        "From 05.11.2020 to 05.11.2021 I went to the University Pompeu Fabra in Spain.",
         "",
         # Work Experience
         "From 05.11.2000 to 05.11.2005 I worked at Google in Germany.",
-        "I worked at Amazon from 05.11.2005 to 05.11.2006.",
-        "I worked at Microsoft from 05.11.2006 to 05.11.2009.",
+        "I worked at Siemens from 05.11.2005 until 05.11.2006",
+        "I worked at Microsoft from 05.11.2006 until 05.11.2010",
         "",
         # Social Engagement
-        "Oxfam International 05.11.2006 - 05.11.2009",
+        "Oxfam International 05.11.2006 until 05.11.2010",
         "",
         # Skills
         "Programming in Java is one of my biggest skills.",
@@ -166,43 +166,46 @@ debug_text_data = {
     "Check_Repetition": [
         # Personal Information
         "Max Mustermann",
-        "5th of November 2001",
-        "Repeat the question.",
+        "5.11.2001",
+        "Please repeat the question.",
         "I'd gladly tell you. My E-Mail is max@mustermann.com.",
         "Baumstreet 123",
         "What did you put as my name?",
         # Education
         "I was in Louise Schroeder School from 2010 to 2019.",
         "",
-        "Show me what I put in the last stage.",
+        "What did you save for the last stage?",
         "Can you show me everything you saved so far?",
+        "",
         # Work Experience
         "My first Job was at Google. I think I worked there 2000 - 2005.",
         "",
         # Social Engagement
-        "From 2006 to 2009 I helped out at Oxfam International.",
+        "From 2006 until 2009 I helped out at Oxfam International.",
         # Skills
         "Python Java",
         "Show me where I live.",
         # Interests
         "My main interests are languages and to cook.",
+        "Goodbye"
     ],
     "False_Inputs":[
         # Personal Information
         "asdf123",
         "Well... Hello to you too. You can call me Max Mustermann.",
         "The 35.11.2001",
-        "My birthdate? It is the 5/11/2001.",
+        "My birthdate? It is the 5.11.2001",
         "It is max@mustermann.com. Here you go.",
         "I live in Baumstreet 123.",
         # Education
-        "2010 - 2019 Louise Schroeder School",
+        "From 05.11.2010 until 29.04.2001 at Louise Schroeder School",
+        "",
         # Work experience
-        "2000 - 2005",
-        "Google",
-        "My second Job was at Amazon. I think I worked there 2005 - 2006.",
+        "From the 05.11.2011 until 12.04.2012",
+        "University",
+        "I also worked at Siemens I think I worked there from 05.11.2011 until the 05.11.2016",
         # Social Engagement
-        "Oxfam International 2006 2009",
+        "Oxfam International 05.11.2006 until 05.11.2009",
         # Skills
         "Hmmm I have to think",
         "I worked a lot with Java and Pyton.",
@@ -221,7 +224,7 @@ debug_text_data = {
         "From 2010 to 2019 I went to the Louise Schroeder School in Germany.",
         # Work experience
         "I worked at Google from 2000 to 2005.",
-        "2005 - 2006 Amazon",
+        "2005 - 2006 Siemens",
         "Show me my Personal Data.",
         "From 2006 to 2009 I worked at Microsoft in Spain.",
         "2010 - 2012 Facebook",
