@@ -1,6 +1,6 @@
 # ReadMe
 
-### Progress since the last session
+## Progress since the last session
 1. We added sorting to dates, so it doesn't matter in which order the user writes them.
 2. Added the possibility for empty input.
 3. Changed the classification to compare the input with vectors for possible sentences for the category.
@@ -15,6 +15,7 @@
 12. Added a real start and end of the conversation. With printing the full CV at the end as well.
 13. We fixed some bugs we had with saving the address, the user gives the chatbot.
 14. Fixed some issues with the recognition of categories in the bullet-point function. 
+
 
 ## Functionality the chatbot can handle
 Generally each input can belong to one of four categories. 
@@ -32,7 +33,11 @@ The user can stop by inputting nothing, so enter.
 ##### Regex/datetime
 We handle everything with regex/datetime, what SpaCy can't handle out of the box or only unreliably.
 The address and the e-mail address is parsed with regex, since it is really specific.
-For all dates 
+For all dates we use datetime from python. Therefore, we have defined specific formats which we decided to work with.
+For that please take a look at the utils Class and the "date_formats" stated there. The advantage over SpaCy is 
+that dates are better detected and stick with a consistent format which in the end does not lead to several
+date formats printed on the CV. Furthermore we have the advantage of sorting dates and therefore also display them in 
+the correct order no matter in which order the dates were given in the input. 
 
 ##### Spacy
 Here we mostly try to get the important entities, like Person or Organisation.
@@ -40,7 +45,6 @@ Currently, we are using SpaCy in all stages:
 - Personal Data: detecting Names  
 - Education, Experience and Social Engagement: detecting Organizations 
 - Skills: detecting the different skills by using several optional Entities
-
 
 ### Repetition
 Here the chatbot will confirm, that it can repeat the question and then ask again. Here the input can once again belong
@@ -58,7 +62,7 @@ Here the input is checked for possible variants of the question/stage names.
 And then the corresponding data is printed.
 If the requested data isn't found, the user has the option to try again or just leave it.
 
-# How to run
+## How to run
 Packages we use (from all of them the most current version):
 - datetime
 - numpy
@@ -76,7 +80,13 @@ To use it, the debug_key has to be set to either "Standard" or "Mixed". Which re
 coming from an already written dialog. The outputs of that are at the bottom of the ReadMe.
 If it is set to false, input is requested in the command line.
 
+## Example Dialogs
 
+For the example dialogues please view the attached files. We have created 4 different examples which all test and show
+the stated features above. But of course also feel free to directly interact with our Bot by running the code yourself.
 
-
-# Example Dialogs
+## Experience with SpaCy 
+Last but not least we wanted to share our experience with SpaCy. We think that for several entities it does a great job 
+recognizing them, but also has a lot of weaknesses, e.g. when trying to filter Date Entities. Therefore, we tried to 
+implement our own approach using datetime from python. For our specific use case the results here turned out to be
+better, and therefore we stuck with it. 
