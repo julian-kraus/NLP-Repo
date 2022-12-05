@@ -1,11 +1,11 @@
 from datetime import datetime
-from itertools import permutations
 
 from utils import *
 import numpy as np
 from numpy.linalg import norm
 import sys
 import os
+import re
 
 
 class Dialog:
@@ -18,7 +18,6 @@ class Dialog:
         self.goodbye_question_vec = self.compute_vec_list(stop_statements)
         os.system('clear')
         os.system('cls')
-
         self.say("Hello, I am CV-Bot. I am here to help you create your CV.")
         self.converse()
 
@@ -79,7 +78,8 @@ class Dialog:
         else:
             if len(self.history) > 1:
                 return self.history[-2][1][-1]
-            return self.handle_error("", no_prev_error)
+            self.say("Sorry I didn't find any previous data.")
+            return ""
 
     def add_question_to_history(self, question):
         self.history[-1][1].append(question)
@@ -147,8 +147,6 @@ class Dialog:
 
         self.goodbye()
 
-        # ask according to the current position
-
     def ask(self, question, data_missing):
         # get the answer from the user or from the debug data
         current_question = self.get_current_question_data()
@@ -172,7 +170,9 @@ class Dialog:
         type, data = self.classify(user_input)
         self.print_debug("Classified input type: " + type)
         if type == "check_data":
-            self.print_data(data)
+            text = self.get_data_as_string(data)
+            if text == "":
+                self.say("Sorry I didn't find any data to show you. I will continue with the CV.")
             return self.understand(self.ask(self.get_current_question_name(), None))
         elif type == "goodbye":
             self.goodbye()
@@ -240,11 +240,16 @@ class Dialog:
 
     def noCheckDataFound(self):
         self.say("Sorry unfortunately we couldn't find the data you were looking for.")
-        new_input = input("Do you want to continue or try again? \n")
-        if self.check_input_for_words(new_input, check_again):
-            return self.classify(self.request("Please state your request again. \n"))
+        new_input = self.request("Do you want to continue or try again? \n")
+        category, data = self.classify(new_input)
+        if category == "answer" or "repeat":
+            if self.check_input_for_words(new_input, check_again):
+                return self.classify(self.request("Please state your request again. \n"))
+            else:
+                return None
         else:
-            return None
+            self.understand(new_input)
+            self.noCheckDataFound()
 
     def check_input_for_words(self, user_input, words):
         return any(str.lower(ele) in str.lower(user_input) for ele in words)
