@@ -300,8 +300,6 @@ class Dialog:
                 if date != False:
                     date = date.strftime("%d/%m/%Y")
                     dates.append(date)
-            dates.sort()
-
             counter = 0
             for entity in necessary_entities:
                 if entity == 'DATE' and counter < len(dates):
@@ -324,7 +322,7 @@ class Dialog:
                     processed_input.remove(inp)
                     break
 
-        sort_necessary = False
+
         # check if all necessary information are given
         for key, value in data_dict.items():
             question_missing_info = 'The following information seems to be missing: ' + str(
@@ -341,23 +339,21 @@ class Dialog:
                         break
                 data_dict[key] = processed_input[0][1]
 
+        # sort all dates
+        dates = []
+        for key, value in data_dict.items():
             if 'DATE' in key:
-                sort_necessary = True
-
-        if sort_necessary:
-            dates = []
-            for key, value in data_dict.items():
-                if 'DATE' in key:
-                    dates.append(value)
-            #print(dates)
-            dates.sort()
-            #print(dates)
-            #date = date.strftime("%d/%m/%Y")
-            counter = 0
-            for key, value in data_dict.items():
-                if 'DATE' in key:
-                    data_dict[key] = dates[counter]
-                    counter += 1
+                dates.append(self.check_valid_date(value))
+        dates.sort()
+        dates_new = []
+        for date in dates:
+            dates_new.append(date.strftime("%d/%m/%Y"))
+        dates = dates_new
+        counter = 0
+        for key, value in data_dict.items():
+            if 'DATE' in key:
+                data_dict[key] = dates[counter]
+                counter += 1
 
     # code from https://code.activestate.com/recipes/578245-flexible-datetime-parsing/
     def check_valid_date(self, string):
