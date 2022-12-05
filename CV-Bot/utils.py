@@ -4,7 +4,7 @@ nlp = spacy.load('en_core_web_sm')
 
 
 # To use for debugging
-debug_info = False
+debug_info = True
 debug_text = True
 debug_text_key = "Mixed" # Possible: Standard, Check_Repetition, False_Inputs, Mixed
 debug_text_data = {
@@ -168,7 +168,7 @@ repeat_info_questions = ["Please repeat the question.",
                          "I didn't catch that."
                          "I want to hear it once more."
                          "Show it once more.",
-                         "I didn't catch that. Can you repeat it please?"
+                         "I didn't understand that. Repeat it please?"
                          ]
 
 stop_statements = ["I want to stop",

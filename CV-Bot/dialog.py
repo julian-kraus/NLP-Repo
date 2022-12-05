@@ -333,6 +333,7 @@ class Dialog:
                 # until we have fitting input keep asking
                 while True:
                     processed_input = self.understand(self.ask(question, question_missing_info))
+                    self.print_debug("Processed input: " + str(processed_input))
                     if processed_input is None:
                         continue
                     if len(processed_input) != 0:
@@ -387,6 +388,7 @@ class Dialog:
                 else:
                     # process the given input
                     processed_input = self.understand(inp)
+                    self.print_debug("Processed input: " + str(processed_input))
 
                     if processed_input is None:
                         continue
@@ -405,13 +407,10 @@ class Dialog:
                     current_question = self.get_current_question_data()
                     data_dict = current_question[data_store]
                     counter += 1
-                    self.print_debug(
-                        self.get_current_question_name() + "\n" + str(data_dict) + "\n" + str(current_question) + "\n" + str(
-                            self.get_current_question_data()))
 
                     self.map_data(data_dict, processed_input, question)
 
-                self.print_debug(str(data))
+                #self.print_debug(str(data))
 
     def goodbye(self):
         self.say("I hope I could help you with your CV. Until another time.")
