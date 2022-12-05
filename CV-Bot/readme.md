@@ -32,12 +32,15 @@ The user can stop by inputting nothing, so enter.
 ##### Regex/datetime
 We handle everything with regex/datetime, what SpaCy can't handle out of the box or only unreliably.
 The address and the e-mail address is parsed with regex, since it is really specific.
+For all dates 
 
-    DANIEL
-##### SpaCy
+##### Spacy
 Here we mostly try to get the important entities, like Person or Organisation.
+Currently, we are using SpaCy in all stages: 
+- Personal Data: detecting Names  
+- Education, Experience and Social Engagement: detecting Organizations 
+- Skills: detecting the different skills by using several optional Entities
 
-    Also use it for Skills and Interests??
 
 ### Repetition
 Here the chatbot will confirm, that it can repeat the question and then ask again. Here the input can once again belong

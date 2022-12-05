@@ -6,7 +6,7 @@ nlp = spacy.load('en_core_web_sm')
 # To use for debugging
 debug_info = False
 debug_text = True
-debug_text_key = "Check_Repetition" # Can be Standard or Mixed
+debug_text_key = "False_Inputs" # Can be Standard or Mixed
  # Todo remove unused dialogs !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 debug_text_data = {
     "Standard": [
@@ -20,7 +20,7 @@ debug_text_data = {
         "From 05.11.2020 to 05.11.2021 I went to the University Pompeu Fabra in Spain.",
         "",
         # Work Experience
-        "From 05.11.2000 to 05.11.2005 I worked at Google in Germany.",
+        "From 05.11.2000 to xyz 01.01.2008 I worked at Google in Germany.",
         "I worked at Siemens from 05.11.2005 until 05.11.2006",
         "I worked at Microsoft from 05.11.2006 until 05.11.2010",
         "",
@@ -35,22 +35,21 @@ debug_text_data = {
     "Check_Repetition": [
         # Personal Information
         "Max Mustermann",
-        "5.11.2001",
+        "I was born on the 5.11.2001",
         "Please repeat the question.",
-        "I'd gladly tell you. My E-Mail is max@mustermann.com.",
+        "My email adress is max@mustermann.com.",
         "Baumstreet 123",
         "What did you put as my name?",
         # Education
         "I was in Louise Schroeder School from 2010 to 2019.",
         "",
-        "What did you save for the last stage?",
         "Can you show me everything you saved so far?",
-        "",
         # Work Experience
         "My first Job was at Google. I think I worked there 2000 - 2005.",
         "",
         # Social Engagement
         "From 2006 until 2009 I helped out at Oxfam International.",
+        "",
         # Skills
         "Programming in Java is one of my biggest skills.",
         "I also like programming in Python",
@@ -71,14 +70,12 @@ debug_text_data = {
         "",
         # Work experience
         "From the 05.11.2011 until 12.04.2012",
-        "University",
+        "Technical University of Munich",
         "I also worked at Siemens I think I worked there from 05.11.2011 until the 05.11.2016",
         # Social Engagement
         "Oxfam International 05.11.2006 until 05.11.2009",
         # Skills
-        "Hmmm I have to think",
-        "I worked a lot with Java and Pyton.",
-        "I think I am finished.",
+        "I think I am finished",
     ],
     "Mixed": [
         # Personal Information
@@ -160,7 +157,8 @@ check_data_questions = ["Can you show me what I entered for X?",
                         "Show me all data."
                         ]
 
-repeat_info_questions = ["Can you please repeat that.",
+repeat_info_questions = ["Please repeat the question.",
+                        "Can you please repeat that.",
                          "State the question again.",
                          "Can you repeat the question?",
                          "I didn't catch that."

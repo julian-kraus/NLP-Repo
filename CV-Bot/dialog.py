@@ -152,14 +152,17 @@ class Dialog:
         # get the answer from the user or from the debug data
         current_question = self.get_current_question_data()
         if debug_text:
-            self.say(current_question[question_num])
+            if data_missing is not None:
+                self.say(str(data_missing) + ' - question: ' + current_question[question_num])
+            else:
+                self.say(current_question[question_num])
             answer = debug_text_data[debug_text_key].pop(0)
             print(answer)
         else:
             if data_missing is not None:
-                answer = self.request(str(data_missing) + ' - question: ' + current_question[question_num] + "\n")
+                answer = self.request(str(data_missing) + ' - question: ' + current_question[question_num])
             else:
-                answer = self.request(current_question[question_num] + "\n")
+                answer = self.request(current_question[question_num])
 
         self.print_debug("Received answer: " + answer)
         if answer == "":
@@ -179,7 +182,7 @@ class Dialog:
             if text == "":
                 self.say("Sorry I didn't find any data to show you. I will continue with the CV.")
             else:
-                print(text)
+                self.say(text)
             if self.inBullets:
                 return None
             return self.understand(self.ask(self.get_current_question_name(), None))
@@ -333,7 +336,7 @@ class Dialog:
                 while True:
                     processed_input = self.understand(self.ask(question, question_missing_info))
                     if len(processed_input) != 0:
-                        break;
+                        break
                 data_dict[key] = processed_input[0][1]
 
             if 'DATE' in key:
@@ -344,7 +347,10 @@ class Dialog:
             for key, value in data_dict.items():
                 if 'DATE' in key:
                     dates.append(value)
+            #print(dates)
             dates.sort()
+            #print(dates)
+            #date = date.strftime("%d/%m/%Y")
             counter = 0
             for key, value in data_dict.items():
                 if 'DATE' in key:
@@ -364,18 +370,19 @@ class Dialog:
     def sev_bullet_points(self, question):
         counter = 0
         position = self.get_current_stage_name()
-        q = 'If you would like to add another ' + str(position) + 'step enter the information in the same ' \
+        q = 'If you would like to add another ' + str(position) + ' step enter the information in the same ' \
                                                                   'format as already done. Otherwise press ' \
-                                                                  'Enter \n '
-        if position == 'Education' or position == 'Experience' or position == 'Skills':
+                                                                  'Enter'
+        if position == 'Education' or position == 'Experience' or position == 'Skills' or position == 'Social Engagement':
             self.inBullets = True
             while True:
                 if debug_text:
                     inp = debug_text_data[debug_text_key].pop(0)
+                    self.say(q)
                     print(inp)
                 else:
                     self.add_question_to_history(q)
-                    inp = self.ask(q)
+                    inp = self.ask(q, None)
 
                 if inp == "":
                     break
