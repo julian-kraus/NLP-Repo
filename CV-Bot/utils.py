@@ -4,9 +4,9 @@ nlp = spacy.load('en_core_web_sm')
 
 
 # To use for debugging
-debug_info = True
+debug_info = False
 debug_text = True
-debug_text_key = "Mixed" # Possible: Standard, Check_Repetition, False_Inputs, Mixed
+debug_text_key = "Standard" # Possible: Standard, Check_Repetition, False_Inputs, Mixed
 debug_text_data = {
     "Standard": [
         # Personal Information
