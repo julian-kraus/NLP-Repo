@@ -335,6 +335,8 @@ class Dialog:
                 # until we have fitting input keep asking
                 while True:
                     processed_input = self.understand(self.ask(question, question_missing_info))
+                    if processed_input is None:
+                        continue
                     if len(processed_input) != 0:
                         break
                 data_dict[key] = processed_input[0][1]

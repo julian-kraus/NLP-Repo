@@ -1,0 +1,151 @@
+Index: utils.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import spacy\r\nimport re\r\n\r\nimport contextlib\r\n\r\nwith contextlib.redirect_stdout(None): # Todo check how to do that\r\n    spacy.cli.download(\"en_core_web_sm\")\r\nnlp = spacy.load('en_core_web_sm')\r\n\r\n\r\n\r\n\r\n# filter for valid inputs by user\r\nmail_re = \".+@.+\\..+\"\r\naddress_re = \"[A-Z]+[a-z]+.? [0-9]+\"\r\ndate_formats = ['%Y-%m-%d', '%Y', '%Y.%m.%d', '%d.%m.%Y', '%d-%m-%Y']\r\n\r\n# Error codes\r\ncheck_data_error = \"check_data_not_found\"\r\nno_prev_error = \"prev\"\r\n\r\nquestion_num = 0\r\nfun_num = 1\r\ndata_num = 2\r\ndebug_info = False\r\ndebug_text = True\r\ndebug_text_key = \"Standard\"\r\ndata_store = 1\r\nthreshold = 0.7\r\n# Error codes\r\n\r\n\r\n\r\n\r\n\r\ndata = {\"Personal Data\":\r\n    {\r\n        \"Name\": [\"What is your full name?\", {(\"PERSON\", \"\"): None}],\r\n        \"Birthdate\": [\"What is your date of birth?\", {(\"DATE\", \"CARDINAL\"): None}],\r\n        \"E-Mail\": [\"Please tell me your email.\", {(\"E-Mail\", \"\"): None}],\r\n        \"Address\": [\"Please state your address.\", {(\"Address\", \"\"): None}]\r\n    },\r\n    \"Education\":\r\n        {\r\n            \"1\": [\"Please state an education step containing the teaching institution, a start date \"\r\n                  \"and a end date.\",\r\n                  {(\"DATE\", \"CARDINAL\", 'Start'): None,\r\n                   (\"DATE\", \"CARDINAL\", 'End'): None,\r\n                   (\"ORG\", \"\"): None}]\r\n        },\r\n    \"Experience\":\r\n        {\r\n            \"1\": [\"Please state an step of your working experience containing the company, a start date \"\r\n                  \"and a end date.\",\r\n                  {(\"DATE\", \"CARDINAL\", 'Start'): None,\r\n                   (\"DATE\", \"CARDINAL\", 'End'): None,\r\n                   (\"ORG\", \"\"): None}]\r\n        },\r\n    \"Social Engagement\":\r\n        {\r\n            \"1\": [\"Please state a social engagement step containing the the institution, a start date \"\r\n                  \"and a end date.\",\r\n                  {(\"DATE\", \"CARDINAL\", '1'): None,\r\n                   (\"DATE\", \"CARDINAL\", '2'): None,\r\n                   (\"ORG\", \"\"): None}]\r\n        },\r\n    \"Skills\":\r\n        {\r\n            \"Skills\": [\"Please state skills you would liked mentioned in your CV.\",\r\n                       {(\"DATE\", \"CARDINAL\"): None,\r\n                        (\"DATE\", \"CARDINAL\"): None,\r\n                        (\"ORG\", \"\"): None}]\r\n        },\r\n    \"Interests\":\r\n        {\r\n            \"Interests\": [\"If you would like to state any personal interests in your CV please enter them here: \",\r\n                          {(\"DATE\", \"CARDINAL\"): None,\r\n                           (\"DATE\", \"CARDINAL\"): None,\r\n                           (\"ORG\", \"\"): None}]\r\n        }\r\n}\r\n\r\n\r\ncheck_data_questions = [\"Can you show me what I entered for X?\",\r\n                        \"What did you put as X?\", \"Show me my X.\",\r\n                        \"What are my X?\",\r\n                        \"Tell me about X.\"\r\n                        \"Show me the last questions stage.\",\r\n                        \"What did you put in last?\"\r\n                        \"What was saved in the X?\",\r\n                        \"What did I answer in the previous question?\",\r\n                        \"I want to see X.\"\r\n                        ]\r\n\r\nrepeat_info_questions = [\"Can you please repeat that.\",\r\n                         \"State the question again.\",\r\n                         \"Can you repeat the question?\",\r\n                         \"I didn't catch that.\"\r\n                         \"I want to hear it once more.\"\r\n                         \"Show it once more.\"\r\n                         ]\r\n\r\nstop_statements = [\"I want to stop\",\r\n                   \"I am finished\",\r\n                   \"Stop the dialog\",\r\n                   \"Goodbye\",\r\n                   \"Bye\",\r\n                   \"It is over\"\r\n                   ]\r\n\r\ncheck_prev = [\"last\", \"previous\", \"before\"]\r\ncheck_stage = [\"stage\", \"phase\", \"section\"]\r\ncheck_again = [\"again\", \"more\"]\r\ncheck_all = [\"all\", \"every\", \"full\"]\r\n\r\ndata_keys = {\r\n    \"Personal Data\": [\"Personal\", \"Personal\", \"About me\"],\r\n    \"Name\": [\"Name\", \"called\"],\r\n    \"Birthdate\": [\"Date\", \"Birth\", \"Born\"],\r\n    \"E-Mail\": [\"Mail\"],\r\n    \"Address\": [\"Address\", \"Residence\", \"Home\", \"live\"],\r\n    \"Education\": [\"Education\", \"School\", \"University\"],\r\n    \"Skills\": [\"Skill\", \"Action\", \"Capabilities\"],\r\n    \"Social Engagement\": [\"Social\", \"Engagement\"],\r\n    \"Experience\": [\"Experience\"],\r\n    \"Interests\": [\"Interests\"]\r\n}\r\n\r\ndef input_possible_values(lst):\r\n    values = list(data_keys.values())\r\n    result_list = []\r\n    for elem in lst:\r\n        if \"X\" in elem:\r\n            for val in [i for sub in values for i in sub]:\r\n                result_list.append(str.replace(elem, \"X\", val))\r\n        else:\r\n            result_list.append(elem)\r\n    return result_list\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\ndebug_text_data = {\r\n    \"Standard\": [\r\n        # Personal Information\r\n        \"Hey, my name is Max Mustermann.\",\r\n        \"Of course. It is the 5.11.2001\",\r\n        \"max@mustermann.com\",\r\n        \"My address is Baumstr. 123.\",\r\n        # Education\r\n        \"Oh yeah, sure. I was in Louise Schroeder School until 2019. I think I started in 2010.\",\r\n        \"From 2020 to 2021 I went to the University Pompeu Fabra in Spain.\",\r\n        \"\",\r\n        # Work Experience\r\n        \"From 05.11.2000 to 05.11.2005 I worked at Google in Germany.\",\r\n        \"I worked at Amazon from 05.11.2005 to 05.11.2006.\",\r\n        \"I worked at Microsoft from 05.11.2006 to 05.11.2009.\",\r\n        \"\",\r\n        # Social Engagement\r\n        \"Oxfam International 05.11.2006 - 05.11.2009\",\r\n        \"\",\r\n        # Skills\r\n        \"Most stuff I programmed was in Java and Python. So I would say my main skills lay in that area.\",\r\n        # Interests\r\n        \"Hmmm, I'd say languages and food in general\",\r\n        \"Goodbye\"\r\n    ],\r\n    \"Check_Repetition\": [\r\n        # Personal Information\r\n        \"Max Mustermann\",\r\n        \"5th of November 2001\",\r\n        \"Repeat the question.\",\r\n        \"I'd gladly tell you. My E-Mail is max@mustermann.com.\",\r\n        \"Baumstreet 123\",\r\n        \"What did you put as my name?\",\r\n        # Education\r\n        \"I was in Louise Schroeder School from 2010 to 2019.\",\r\n        \"\",\r\n        \"Show me what I put in the last stage.\",\r\n        \"Can you show me everything you saved so far?\",\r\n        # Work Experience\r\n        \"My first Job was at Google. I think I worked there 2000 - 2005.\",\r\n        \"\",\r\n        # Social Engagement\r\n        \"From 2006 to 2009 I helped out at Oxfam International.\",\r\n        # Skills\r\n        \"Python Java\",\r\n        \"Show me where I live.\",\r\n        # Interests\r\n        \"My main interests are languages and to cook.\",\r\n    ],\r\n    \"False_Inputs\":[\r\n        # Personal Information\r\n        \"asdf123\",\r\n        \"Well... Hello to you too. You can call me Max Mustermann.\",\r\n        \"The 35.11.2001\",\r\n        \"My birthdate? It is the 5/11/2001.\",\r\n        \"It is max@mustermann.com. Here you go.\",\r\n        \"I live in Baumstreet 123.\",\r\n        # Education\r\n        \"2010 - 2019 Louise Schroeder School\",\r\n        # Work experience\r\n        \"2000 - 2005\",\r\n        \"Google\",\r\n        \"My second Job was at Amazon. I think I worked there 2005 - 2006.\",\r\n        # Social Engagement\r\n        \"Oxfam International 2006 2009\",\r\n        # Skills\r\n        \"Hmmm I have to think\",\r\n        \"I worked a lot with Java and Pyton.\",\r\n        \"I think I am finished.\",\r\n    ],\r\n    \"Mixed\": [\r\n        # Personal Information\r\n        \"Hello Chat Bot. Nice to meet you. My name is Max Mustermann.\",\r\n        \"What did you save for the last question?\",\r\n        \"I was born on the 5.11.2001.\",\r\n        \"It is the max@mustermann.com.\",\r\n        \"\",\r\n        \"I am currently living in Baumstreet 123.\",\r\n        # Education\r\n        \"I want to see what you put as Education.\",\r\n        \"From 2010 to 2019 I went to the Louise Schroeder School in Germany.\",\r\n        # Work experience\r\n        \"I worked at Google from 2000 to 2005.\",\r\n        \"2005 - 2006 Amazon\",\r\n        \"Show me my Personal Data.\",\r\n        \"From 2006 to 2009 I worked at Microsoft in Spain.\",\r\n        \"2010 - 2012 Facebook\",\r\n        # Social Engagement\r\n        \"I worked at Oxfam International from 2006 to 2009 to help end poverty.\",\r\n        # Skills\r\n        \"My main expertise is with Python and Java.\",\r\n        \"I didn't catch that. Can you repeat it please?\",\r\n        # Interests\r\n        \"I love learning new languages and I am also a great cook.\",\r\n    ]\r\n\r\n}\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/utils.py b/utils.py
+--- a/utils.py	(revision eb106075d304ba42e2481de4f7d09d79d98303ca)
++++ b/utils.py	(date 1670185313047)
+@@ -24,7 +24,7 @@
+ data_num = 2
+ debug_info = False
+ debug_text = True
+-debug_text_key = "Standard"
++debug_text_key = "False_Inputs"
+ data_store = 1
+ threshold = 0.7
+ # Error codes
+@@ -151,16 +151,16 @@
+         "max@mustermann.com",
+         "My address is Baumstr. 123.",
+         # Education
+-        "Oh yeah, sure. I was in Louise Schroeder School until 2019. I think I started in 2010.",
+-        "From 2020 to 2021 I went to the University Pompeu Fabra in Spain.",
++        "Oh yeah, sure. I was in Louise Schroeder School until 05.11.2019. I think I started in 05.11.2010.",
++        "From 05.11.2020 to 05.11.2021 I went to the University Pompeu Fabra in Spain.",
+         "",
+         # Work Experience
+         "From 05.11.2000 to 05.11.2005 I worked at Google in Germany.",
+-        "I worked at Amazon from 05.11.2005 to 05.11.2006.",
+-        "I worked at Microsoft from 05.11.2006 to 05.11.2009.",
++        "I worked at Amazon from 05.11.2005 until 05.11.2006",
++        "I worked at Microsoft from 05.11.2006 until 05.11.2010",
+         "",
+         # Social Engagement
+-        "Oxfam International 05.11.2006 - 05.11.2009",
++        "Oxfam International 05.11.2006 until 05.11.2010",
+         "",
+         # Skills
+         "Most stuff I programmed was in Java and Python. So I would say my main skills lay in that area.",
+@@ -171,43 +171,46 @@
+     "Check_Repetition": [
+         # Personal Information
+         "Max Mustermann",
+-        "5th of November 2001",
+-        "Repeat the question.",
++        "5.11.2001",
++        "Please repeat the question.",
+         "I'd gladly tell you. My E-Mail is max@mustermann.com.",
+         "Baumstreet 123",
+         "What did you put as my name?",
+         # Education
+         "I was in Louise Schroeder School from 2010 to 2019.",
+         "",
+-        "Show me what I put in the last stage.",
++        "What did you save for the last stage?",
+         "Can you show me everything you saved so far?",
++        "",
+         # Work Experience
+         "My first Job was at Google. I think I worked there 2000 - 2005.",
+         "",
+         # Social Engagement
+-        "From 2006 to 2009 I helped out at Oxfam International.",
++        "From 2006 until 2009 I helped out at Oxfam International.",
+         # Skills
+         "Python Java",
+         "Show me where I live.",
+         # Interests
+         "My main interests are languages and to cook.",
++        "Goodbye"
+     ],
+     "False_Inputs":[
+         # Personal Information
+         "asdf123",
+         "Well... Hello to you too. You can call me Max Mustermann.",
+         "The 35.11.2001",
+-        "My birthdate? It is the 5/11/2001.",
++        "My birthdate? It is the 5.11.2001",
+         "It is max@mustermann.com. Here you go.",
+         "I live in Baumstreet 123.",
+         # Education
+-        "2010 - 2019 Louise Schroeder School",
++        "From 05.11.2010 until 29.04.2001 at Louise Schroeder School",
++        "",
+         # Work experience
+-        "2000 - 2005",
+-        "Google",
+-        "My second Job was at Amazon. I think I worked there 2005 - 2006.",
++        "From the 05.11.2011 until 12.04.2012",
++        "University",
++        "I also worked at Amazon I think I worked there from 05.11.2011 until the 05.11.2016",
+         # Social Engagement
+-        "Oxfam International 2006 2009",
++        "Oxfam International 05.11.2006 until 05.11.2009",
+         # Skills
+         "Hmmm I have to think",
+         "I worked a lot with Java and Pyton.",
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"5649b55e-c08f-47c7-b4e3-720abb9a88ae\" name=\"Changes\" comment=\"debug texte\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/dialog.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/dialog.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/utils.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/utils.py\" afterDir=\"false\" />\r\n    </list>\r\n    <list id=\"d940c511-92f0-4fb1-bee5-601ff7e2efda\" name=\"Changes by danielbier\" comment=\"\" />\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Jupyter Notebook\" />\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$/..\" />\r\n  </component>\r\n  <component name=\"MarkdownSettingsMigration\">\r\n    <option name=\"stateVersion\" value=\"1\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"2GaQfpjOf9rEUTWkdg4KFLWfbUW\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,\r\n    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,\r\n    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;C:/Users/kraus/OneDrive/Uni/Semester 5 - Barcelona/Term 1/AI/P-03/reinforcement&quot;,\r\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.language&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RunManager\">\r\n    <configuration default=\"true\" type=\"PythonConfigurationType\" factoryName=\"Python\">\r\n      <module name=\"CV-Bot\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"true\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"main\" type=\"PythonConfigurationType\" factoryName=\"Python\" nameIsGenerated=\"true\">\r\n      <module name=\"CV-Bot\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/main.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"5649b55e-c08f-47c7-b4e3-720abb9a88ae\" name=\"Changes\" comment=\"\" />\r\n      <created>1666624320371</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1666624320371</updated>\r\n      <workItem from=\"1666624324547\" duration=\"3914000\" />\r\n      <workItem from=\"1666707462917\" duration=\"24000\" />\r\n      <workItem from=\"1667220446521\" duration=\"2463000\" />\r\n      <workItem from=\"1668082266353\" duration=\"57000\" />\r\n      <workItem from=\"1668349949463\" duration=\"9077000\" />\r\n      <workItem from=\"1668771685506\" duration=\"47000\" />\r\n      <workItem from=\"1669282439560\" duration=\"10646000\" />\r\n      <workItem from=\"1669300612743\" duration=\"27000\" />\r\n      <workItem from=\"1669389294498\" duration=\"687000\" />\r\n      <workItem from=\"1669464900000\" duration=\"7630000\" />\r\n      <workItem from=\"1669628196853\" duration=\"6406000\" />\r\n      <workItem from=\"1669713829862\" duration=\"16000\" />\r\n      <workItem from=\"1669808863620\" duration=\"12865000\" />\r\n      <workItem from=\"1670060954323\" duration=\"2146000\" />\r\n      <workItem from=\"1670084078007\" duration=\"3067000\" />\r\n      <workItem from=\"1670090884412\" duration=\"374000\" />\r\n      <workItem from=\"1670155517087\" duration=\"5534000\" />\r\n      <workItem from=\"1670175958624\" duration=\"717000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"add readme.md\">\r\n      <created>1667490598481</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1667490598481</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"add readme.md\">\r\n      <created>1669470813553</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1669470813553</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"add readme.md\">\r\n      <created>1669470895329</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1669470895329</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"add printing etc\">\r\n      <created>1669478066049</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1669478066049</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"question for missing data\">\r\n      <created>1669645453028</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1669645453028</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00006\" summary=\"Some stuff\">\r\n      <created>1669647976514</created>\r\n      <option name=\"number\" value=\"00006\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1669647976514</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00007\" summary=\"Some stuff\">\r\n      <created>1669651321774</created>\r\n      <option name=\"number\" value=\"00007\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1669651321774</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00008\" summary=\"Some stuff\">\r\n      <created>1670091137018</created>\r\n      <option name=\"number\" value=\"00008\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1670091137018</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00009\" summary=\"debug texte\">\r\n      <created>1670159253200</created>\r\n      <option name=\"number\" value=\"00009\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1670159253201</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"10\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <option name=\"ADD_EXTERNAL_FILES_SILENTLY\" value=\"true\" />\r\n    <MESSAGE value=\"add readme.md\" />\r\n    <MESSAGE value=\"add printing etc\" />\r\n    <MESSAGE value=\"question for missing data\" />\r\n    <MESSAGE value=\"Some stuff\" />\r\n    <MESSAGE value=\"debug texte\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"debug texte\" />\r\n  </component>\r\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\r\n    <SUITE FILE_PATH=\"coverage/CV_Bot$main.coverage\" NAME=\"main Coverage Results\" MODIFIED=\"1670176672729\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision eb106075d304ba42e2481de4f7d09d79d98303ca)
++++ b/.idea/workspace.xml	(date 1670238291041)
+@@ -6,7 +6,6 @@
+   <component name="ChangeListManager">
+     <list default="true" id="5649b55e-c08f-47c7-b4e3-720abb9a88ae" name="Changes" comment="debug texte">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialog.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+     </list>
+     <list id="d940c511-92f0-4fb1-bee5-601ff7e2efda" name="Changes by danielbier" comment="" />
+@@ -121,7 +120,8 @@
+       <workItem from="1670084078007" duration="3067000" />
+       <workItem from="1670090884412" duration="374000" />
+       <workItem from="1670155517087" duration="5534000" />
+-      <workItem from="1670175958624" duration="717000" />
++      <workItem from="1670175958624" duration="738000" />
++      <workItem from="1670183565809" duration="3027000" />
+     </task>
+     <task id="LOCAL-00001" summary="add readme.md">
+       <created>1667490598481</created>
+@@ -186,7 +186,14 @@
+       <option name="project" value="LOCAL" />
+       <updated>1670159253201</updated>
+     </task>
+-    <option name="localTasksCounter" value="10" />
++    <task id="LOCAL-00010" summary="debug texte">
++      <created>1670176711806</created>
++      <option name="number" value="00010" />
++      <option name="presentableId" value="LOCAL-00010" />
++      <option name="project" value="LOCAL" />
++      <updated>1670176711806</updated>
++    </task>
++    <option name="localTasksCounter" value="11" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -213,6 +220,6 @@
+     <option name="LAST_COMMIT_MESSAGE" value="debug texte" />
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+-    <SUITE FILE_PATH="coverage/CV_Bot$main.coverage" NAME="main Coverage Results" MODIFIED="1670176672729" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
++    <SUITE FILE_PATH="coverage/CV_Bot$main.coverage" NAME="main Coverage Results" MODIFIED="1670185313126" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+   </component>
+ </project>
+\ No newline at end of file

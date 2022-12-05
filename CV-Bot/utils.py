@@ -6,7 +6,7 @@ nlp = spacy.load('en_core_web_sm')
 # To use for debugging
 debug_info = False
 debug_text = True
-debug_text_key = "False_Inputs" # Can be Standard or Mixed
+debug_text_key = "Mixed" # Can be Standard or Mixed
  # Todo remove unused dialogs !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 debug_text_data = {
     "Standard": [
@@ -88,17 +88,22 @@ debug_text_data = {
         # Education
         "I want to see what you put as Education.",
         "From 2010 to 2019 I went to the Louise Schroeder School in Germany.",
+        "",
         # Work experience
         "I worked at Google from 2000 to 2005.",
         "2005 - 2006 Siemens",
         "Show me my Personal Data.",
         "From 2006 to 2009 I worked at Microsoft in Spain.",
-        "2010 - 2012 Facebook",
+        "2010 - 2012 Siemens",
+        "",
         # Social Engagement
         "I worked at Oxfam International from 2006 to 2009 to help end poverty.",
+        "",
         # Skills
-        "My main expertise is with Python and Java.",
+        "My main expertise is with Java",
+        "And also a bit Python.",
         "I didn't catch that. Can you repeat it please?",
+        ""
     ]
 
 }
@@ -163,7 +168,8 @@ repeat_info_questions = ["Please repeat the question.",
                          "Can you repeat the question?",
                          "I didn't catch that."
                          "I want to hear it once more."
-                         "Show it once more."
+                         "Show it once more.",
+                         "I didn't catch that. Can you repeat it please?"
                          ]
 
 stop_statements = ["I want to stop",
